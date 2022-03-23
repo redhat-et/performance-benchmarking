@@ -1,0 +1,74 @@
+# deploy to ec2 instances
+- hosts: localhost
+  vars_files: 
+    - credentials.yml
+    - vars.yml
+  tasks:
+    - name: Installing boto library
+      pip:
+         name: boto
+         state: present
+    - name: Making Security group for multi-node cluster
+      amazon.aws.ec2_group:
+         name: "{{ secgroup_name }}"
+         aws_region: "{{ aws_region }}"
+         description: "{{ security_group_description }}"
+         vpc_id: "{{ vpc_id }}"
+         aws_access_key: "{{ access_key }}"
+         aws_secret_key: "{{ secret_key }}"
+         rules:
+            - proto: all
+              cidr_ip: "0.0.0.0/0"
+
+    - name: Launching Hub Cluster
+      amazon.aws.ec2_instance:
+         name: "skupper-hub-node"
+         aws_region: "{{ aws_region }}"
+         key_name: "{{ aws_key_name }}"
+         instance_type: "{{ aws_instance_type }}"
+         image_id: "{{ aws_image_id }}"
+         security_group: "{{ secgroup_name }}"
+         network:
+           assign_public_ip: true
+         subnet_id: "{{ aws_subnet }}"
+         aws_access_key: "{{ access_key }}"
+         aws_secret_key: "{{ secret_key }}"
+         state: running
+         wait: true
+      register: hubNode
+
+    - lineinfile:
+        path: "{{ inventory_location }}"
+        regexp: "[^%]*ssh"
+        state: absent
+
+    - name: Updating the hub node's public ip in inventory
+      lineinfile:
+         path: "{{ inventory_location }}"
+         regexp: "hubNode"
+         line: "[hubNode]\n{{ hubNode['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh ec2_name=skupper-hub-node\n"
+
+    - name: Launching Spoke Clusters
+      amazon.aws.ec2_instance:
+         name: "skupper-spoke-node-{{ item+1 }}"
+         aws_region: "{{ aws_region }}"
+         key_name: "{{ aws_key_name }}"
+         instance_type: "{{ aws_instance_type }}"
+         image_id: "{{ aws_image_id }}"
+         security_group: "{{ secgroup_name }}"
+         network:
+           assign_public_ip: true
+         subnet_id: "{{ aws_subnet }}"
+         aws_access_key: "{{ access_key }}"
+         aws_secret_key: "{{ secret_key }}"
+         state: running
+         wait: true
+      register: spokeIP
+      loop: "{{ range(0, node_count | int) }}"
+
+    - name: Updating the worker node's public ip in inventory
+      lineinfile:
+         path: "{{ inventory_location }}"
+         regexp: "spokeNode"
+         line: "[spokeNode]\n{{ spokeIP['results'][item]['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh"
+      loop: "{{ range(0, node_count | int) }}"

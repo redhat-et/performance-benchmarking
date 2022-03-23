@@ -1,0 +1,97 @@
+---
+# tasks file for k8s-skupper-hub
+- name: Register the private address of the EC2 host
+  shell: hostname -I | awk "{print \$1}"
+  register: node_ip
+
+- name: Install k3s on the hub node
+  shell: curl -sfL https://get.k3s.io | sh -
+  ignore_errors: True
+
+- name: Wait for kubeconfig to be created
+  wait_for:
+    path: /etc/rancher/k3s/k3s.yaml
+    state: present
+    timeout: 30
+  ignore_errors: True
+
+- name: Creating the .kube directory
+  file:
+    path: /home/{{ ansible_user }}/.kube/
+    state: directory
+
+- name: Copying kubeconfig to .kube directory
+  copy:
+    remote_src: yes
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: /home/{{ ansible_user }}/.kube/config
+
+- name: Change the owner of .kube/config
+  shell: "sudo chown -R $(id -u {{ ansible_user }}):$(id -g {{ ansible_user }}) /home/{{ ansible_user }}/.kube/"
+
+- name: Fixup the kubeconfig server address
+  ansible.builtin.replace:
+    path: /home/{{ ansible_user }}/.kube/config
+    regexp: '127.0.0.1'
+    replace: '{{ node_ip.stdout }}'
+
+- name: Register the join token
+  command: cat node-token chdir=/var/lib/rancher/k3s/server
+  register: k8s_token
+
+- name: Display the worker join token
+  debug:
+    msg: "{{ k8s_token.stdout }}"
+
+- local_action:
+    module: copy
+    content: "{{ k8s_token.stdout }}"
+    dest: k8s-join-token-{{ansible_date_time.iso8601}}
+
+- name: Set the join token
+  set_fact:
+    k8s_token: "{{ k8s_token.stdout }}"
+
+- name: export KUBECONFIG
+  shell: export KUBECONFIG=/home/{{ ansible_user }}/.kube/config
+
+- name: Verify kubectl
+  command: kubectl get pods --all-namespaces
+
+- name: Create skupper namespace and set context
+  shell: |
+    export KUBECONFIG=/home/{{ ansible_user }}/.kube/config
+    kubectl create namespace spoke1
+    kubectl config set-context --current --namespace spoke1
+  become_user: "{{ ansible_user }}"
+
+- name: Install Skupper
+  shell: |
+    curl https://skupper.io/install.sh | sh
+    sudo cp /root/.local/bin/skupper /usr/local/bin/skupper
+
+- name: Initialize Skupper
+  command: skupper init
+  become_user: "{{ ansible_user }}"
+
+- name: Pause for 30 seconds for Skupper pods to initiate
+  pause:
+    seconds: 30
+
+- name: Wait for Skupper pods to become ready
+  shell: |
+    export KUBECONFIG=/home/{{ ansible_user }}/.kube/config
+    kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=skupper-router --timeout=120s
+  become_user: "{{ ansible_user }}"
+
+- name: Create spoke secrets
+  command: skupper token create /home/{{ ansible_user }}/secret-{{ hostvars[item]['ec2_name'] }}.yaml
+  become_user: "{{ ansible_user }}"
+  with_items:  "{{ groups['spokeNode'] }}"
+
+# copy all the spoke node keys to skupper-keys-tmp/ on the local machine
+- fetch:
+    src: /home/{{ ansible_user }}/secret-{{ hostvars[item]['ec2_name'] }}.yaml
+    dest: ./skupper-keys-tmp/secret-{{ hostvars[item]['ec2_name'] }}.yaml
+    flat: true
+  with_items: "{{ groups['spokeNode'] }}"

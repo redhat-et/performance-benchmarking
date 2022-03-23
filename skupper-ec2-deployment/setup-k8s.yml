@@ -1,0 +1,14 @@
+# roles get branched from here
+- hosts: hubNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-skupper-hub
+
+
+- hosts: spokeNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-skupper-spokes
+
