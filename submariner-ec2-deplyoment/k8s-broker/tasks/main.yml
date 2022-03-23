@@ -88,7 +88,7 @@
     VERSION=devel /home/{{ ansible_user }}/install-sub
     sudo mv /root/.local/bin/subctl /usr/local/bin/
 
-- name: Verify subctl cmd
+- name: export KUBECONFIG
   shell: export KUBECONFIG=/home/{{ ansible_user }}/.kube/config
 
 - name: Verify kubectl cmd
