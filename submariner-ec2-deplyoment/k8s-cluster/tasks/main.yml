@@ -4,11 +4,7 @@
   shell: hostname -I | awk "{print \$1}"
   register: node_ip
 
-- name: Register the hostname EC2 host
-  command: hostname
-  register: node_hostname
-
-- name: Register the hostname EC2 host
+- name: Register the hostname EC2 host fixup
   shell: echo {{node_ip.stdout }}-cluster | sed 's/\./-/g'
   register: hostname_fixup
 
@@ -33,7 +29,7 @@
   pause:
     seconds: 20
 
-- name: Install k3s on the broker node
+- name: Install k3s on the cluster node
   shell: curl -sfL https://get.k3s.io | sh -
   ignore_errors: True
 
