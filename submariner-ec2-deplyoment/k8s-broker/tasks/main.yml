@@ -75,7 +75,7 @@
 - local_action:
     module: copy
     content: "{{ k8s_token.stdout }}"
-    dest: k8s_join-token
+    dest: k8s-join-token-{{ansible_date_time.iso8601}}
 
 - name: Set the join token
   set_fact:
