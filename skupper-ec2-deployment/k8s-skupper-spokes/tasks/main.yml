@@ -1,5 +1,5 @@
 ---
-# tasks file for k8s-skupper-hub
+# tasks file for k8s-skupper-spokes
 - name: Register the private address of the EC2 host
   shell: hostname -I | awk "{print \$1}"
   register: node_ip
@@ -55,10 +55,16 @@
 - name: Install Skupper
   shell: |
     curl https://skupper.io/install.sh | sh
-    sudo cp /root/.local/bin/skupper /usr/local/bin/skupper
+
+- name: Pause for 10 seconds for Skupper post install
+  pause:
+    seconds: 10
+
+- name: Copy Skupper binary
+  shell: sudo cp /root/.local/bin/skupper /usr/local/bin/skupper
 
 - name: Initialize Skupper
-  command: skupper init --ingress none
+  command: skupper init
   become_user: "{{ ansible_user }}"
 
 - name: Pause for 30 seconds for Skupper pods to initiate
@@ -75,7 +81,4 @@
   command: skupper link create /home/{{ ansible_user }}/secret-{{ hostvars[inventory_hostname].ec2_name }}.yaml
   become_user: "{{ ansible_user }}"
   with_items:  "{{ groups['spokeNode'] }}"
-
-- name: Run skupper status
-  command: skupper status
 

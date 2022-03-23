@@ -47,6 +47,7 @@
     module: copy
     content: "{{ k8s_token.stdout }}"
     dest: k8s-join-token-{{ansible_date_time.iso8601}}
+  ignore_errors: True
 
 - name: Set the join token
   set_fact:
@@ -61,14 +62,20 @@
 - name: Create skupper namespace and set context
   shell: |
     export KUBECONFIG=/home/{{ ansible_user }}/.kube/config
-    kubectl create namespace spoke1
-    kubectl config set-context --current --namespace spoke1
+    kubectl create namespace skupper-hub-node
+    kubectl config set-context --current --namespace skupper-hub-node
   become_user: "{{ ansible_user }}"
 
 - name: Install Skupper
   shell: |
     curl https://skupper.io/install.sh | sh
-    sudo cp /root/.local/bin/skupper /usr/local/bin/skupper
+
+- name: Pause for 10 seconds for Skupper post install
+  pause:
+    seconds: 10
+
+- name: Copy Skupper binary
+  shell: sudo cp /root/.local/bin/skupper /usr/local/bin/skupper
 
 - name: Initialize Skupper
   command: skupper init

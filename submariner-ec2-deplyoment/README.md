@@ -1,17 +1,17 @@
 # Kubernetes/Submariner Multi-Cluster Ansible Deployment for AWS EC2
 
 This repo fully automates the deployment of Kubernetes on EC2 and can scale out dynamically to however
-many worker nodes desired. The playbooks use the latest changes to the `amazon.aws.ec2_instance` module.
+many standalone cluster nodes as desired. The playbooks use the latest changes to the `amazon.aws.ec2_instance` module.
 
-Currently, the Kubernetes distribution is [K3s](https://github.com/k3s-io/k3s) as I am using this for datapath
-performance testing, so the lighter the weight the better for my needs. I will be adding Microshift as an
-alternative lightweight distribution as soon as this PR merges [Allow MicroShift to join new worker nodes](https://github.com/redhat-et/microshift/pull/471).
-
-- More details on pre-requisites of the setup can be found at [nerdalert/aws-ansible-kubernetes](https://github.com/nerdalert/aws-ansible-kubernetes/blob/main/README.md).
+Currently, the Kubernetes distribution is [K3s](https://github.com/k3s-io/k3s) as this is focused on datapath
+performance testing, so the lighter the weight the better for our needs. Once the EC2 nodes are up and running, Skupper is 
+then provisioned for multi-cluster service exports. We will be adding Microshift as an alternative lightweight 
+distribution as soon as this PR merges [Allow MicroShift to join new worker nodes](https://github.com/redhat-et/microshift/pull/471).
 
 ### Setup
 
 - This setup installs the specified number of k8s clusters, installs submariner and joins them to the broker.
+- More details on pre-requisites of the setup can be found at [Kubernetes Multi-Node Ansible Deployment for AWS EC2](https://github.com/nerdalert/aws-ansible-kubernetes/blob/main/README.md).
 
 ```sh
 # The following will open an editor
@@ -112,7 +112,7 @@ their join.
 - The kube server join token is copied to the local directory if you want to attach
 worker nodes to any of the clusters.
 
-### Verify the Kubernetes Deployment
+### Verify the Kubernetes/Submariner Deployment
 
 You can find the addresses for the installed nodes in `ip.txt`, for example:
 
@@ -141,14 +141,14 @@ You can find the addresses for the installed nodes in `ip.txt`, for example:
 
 - Connect and verify the Submariner installation:
 
-```sh
+```
 # ssh to the master node. you can look in ip.txt for the ip address
 ssh -i ./<aws-private-key>.pem  fedora@<any_cluster_address_from_inventory>
 
 # export the kube config
 export KUBECONFIG=~/.kube/config
 
-# view running pods
+# view submariner status pods
 subctl show all
 Cluster "default"
  ✓ Detecting broker(s)

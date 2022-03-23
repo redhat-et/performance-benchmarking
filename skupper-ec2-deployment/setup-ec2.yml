@@ -1,6 +1,6 @@
-# deploy to ec2 instances
+# deploy ec2 instances
 - hosts: localhost
-  vars_files: 
+  vars_files:
     - credentials.yml
     - vars.yml
   tasks:
@@ -70,5 +70,5 @@
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "spokeNode"
-         line: "[spokeNode]\n{{ spokeIP['results'][item]['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh"
+         line: "[spokeNode]\n{{ spokeIP['results'][item]['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh ec2_name=skupper-spoke-node-{{ item+1 }}"
       loop: "{{ range(0, node_count | int) }}"
