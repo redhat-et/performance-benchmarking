@@ -1,0 +1,130 @@
+---
+# tasks file for k8s-broker
+- name: Register the private address of the EC2 host
+  shell: hostname -I | awk "{print \$1}"
+  register: node_ip
+
+- name: Register the hostname EC2 host
+  command: hostname
+  register: node_hostname
+
+- name: Create new hostname for Lighthouse
+  shell: echo {{node_ip.stdout }}-cluster | sed 's/\./-/g'
+  register: hostname_fixup
+
+- name: Display the fixup hostname
+  debug:
+    msg: New hostname will be "{{ hostname_fixup.stdout }}"
+
+- name: Add the fixed up hostname into hosts file
+  shell: echo "{{ node_ip.stdout }} {{ hostname_fixup.stdout }}" | sudo tee -a /etc/hosts
+
+# the hostname is changed here to conform to a regex check in lighthouse of the cluster-id
+# of '[a-z0-9]([-a-z0-9]*[a-z0-9])?')] which restricts the default EC2 hostname. The node
+# is not rebooted so the command prompt will not reflect the new hostname.
+- name: Set the new hostname
+  command: sudo hostnamectl set-hostname {{ hostname_fixup.stdout }}
+
+- name: Display the new fixup hostname
+  debug:
+    msg: New hostname is "{{ hostname_fixup.stdout }}"
+
+- name: Pause for 20s to allow for the hostname change to stabalize
+  pause:
+    seconds: 20
+
+- name: Install k3s on the broker node
+  shell: curl -sfL https://get.k3s.io | sh -
+  ignore_errors: True
+
+- name: Wait for kubeconfig to be created
+  wait_for:
+    path: /etc/rancher/k3s/k3s.yaml
+    state: present
+    timeout: 30
+  ignore_errors: True
+
+- name: Creating the .kube directory
+  file:
+    path: /home/{{ ansible_user }}/.kube/
+    state: directory
+
+- name: Copying kubeconfig to .kube directory
+  copy:
+    remote_src: yes
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: /home/{{ ansible_user }}/.kube/config
+
+- name: Change the owner of .kube/config
+  shell: "sudo chown $(id -u {{ ansible_user }}):$(id -g {{ ansible_user }}) /home/{{ ansible_user }}/.kube/config"
+
+- name: Fixup the kubeconfig server address
+  ansible.builtin.replace:
+    path: /home/{{ ansible_user }}/.kube/config
+    regexp: '127.0.0.1'
+    replace: '{{ node_ip.stdout }}'
+
+- name: Register the join token
+  command: cat node-token chdir=/var/lib/rancher/k3s/server
+  register: k8s_token
+
+- name: Display the worker join token
+  debug:
+    msg: "{{ k8s_token.stdout }}"
+
+- local_action:
+    module: copy
+    content: "{{ k8s_token.stdout }}"
+    dest: k8s-join-token-{{ansible_date_time.iso8601}}
+
+- name: Set the join token
+  set_fact:
+    k8s_token: "{{ k8s_token.stdout }}"
+
+- name: Register the K8s master hostname
+  command: hostname
+  register: k8s_master
+
+- name: Set the K8s master hostname variable
+  set_fact:
+    k8s_master: "{{ k8s_master.stdout }}"
+
+- name: Display the master hostname
+  debug:
+    msg: "{{ k8s_master }}"
+
+- name: Install Submariner
+  shell: |
+    curl -Ls https://get.submariner.io/ > /home/{{ ansible_user }}/install-sub
+    chmod +x /home/{{ ansible_user }}/install-sub
+    VERSION=devel /home/{{ ansible_user }}/install-sub
+    sudo mv /root/.local/bin/subctl /usr/local/bin/
+
+- name: export KUBECONFIG
+  shell: export KUBECONFIG=/home/{{ ansible_user }}/.kube/config
+
+- name: Verify kubectl cmd
+  command: kubectl get pods --all-namespaces
+
+- name: Label the node as a gateway
+  command: kubectl label node {{ hostname_fixup.stdout }} submariner.io/gateway=true
+
+- name: Start the submariner broker
+  shell: |
+    subctl --kubeconfig /home/{{ ansible_user }}/.kube/config deploy-broker --globalnet
+    kubectl wait --for=condition=ready pod -l name=submariner-operator --timeout=60s -n submariner-operator
+
+- fetch:
+    src: /home/{{ ansible_user }}/broker-info.subm
+    dest: ./
+    flat: true
+
+- name: Join the submariner node to the broker
+  shell: |
+    CLUSTER_CIDR={{ submariner_cluster_cidr }} \
+    EXTERNAL_CIDR={{ submariner_external_cidr }} \
+    subctl --kubeconfig /home/{{ ansible_user }}/.kube/config \
+    join /home/{{ ansible_user }}/broker-info.subm \
+    --clusterid {{ hostname_fixup.stdout }}-cluster --natt=false \
+    --clustercidr=${CLUSTER_CIDR},${EXTERNAL_CIDR} \
+    --cable-driver {{ submariner_cable_driver }}

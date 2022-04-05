@@ -1,0 +1,75 @@
+---
+# tasks file for k8s-secondary-gateway
+- name: Register the private address of the EC2 host
+  shell: hostname -I | awk "{print \$1}"
+  register: node_ip
+
+- name: Register the hostname EC2 host fixup
+  shell: echo {{node_ip.stdout }}-cluster | sed 's/\./-/g'
+  register: hostname_fixup
+
+- name: Display the fixup hostname
+  debug:
+    msg: New hostname will be "{{ hostname_fixup.stdout }}"
+
+- name: Add the fixed up hostname into hosts file
+  shell: echo "{{ node_ip.stdout }} {{ hostname_fixup.stdout }}" | sudo tee -a /etc/hosts
+
+# the hostname is changed here to conform to a regex check in lighthouse of the cluster-id
+# of '[a-z0-9]([-a-z0-9]*[a-z0-9])?')] which restricts the default EC2 hostname. The node
+# is not rebooted so the command prompt will not reflect the new hostname.
+- name: Set the new hostname
+  command: sudo hostnamectl set-hostname {{ hostname_fixup.stdout }}
+
+- name: Display fixup hostname
+  debug:
+    msg: New hostname is "{{ hostname_fixup.stdout }}"
+
+- name: Pause for 20s to allow for the hostname change to stabalize
+  pause:
+    seconds: 20
+
+- name: Display the k8s join token on the worker node
+  debug:
+    msg: "{{ hostvars[groups['brokerNode'][0]]['k8s_token'] }}"
+
+- name: Display the k8s master IP address on the secondary gateway node used to join
+  debug:
+    msg: "{{ k8s_master }}"
+
+- name: Install k3s on worker nodes
+  vars:
+    K8S_TOKEN: "{{ hostvars[groups['brokerNode'][0]]['k8s_token'] }}"
+    K8S_MASTER: "{{ k8s_master }}"
+  shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ K8S_MASTER }}:6443 K3S_TOKEN={{ K8S_TOKEN }} sh -
+  ignore_errors: True
+
+- name: Install Submariner
+  shell: |
+    curl -Ls https://get.submariner.io/ > /home/{{ ansible_user }}/install-sub
+    chmod +x /home/{{ ansible_user }}/install-sub
+    VERSION=devel /home/{{ ansible_user }}/install-sub
+    sudo mv /root/.local/bin/subctl /usr/local/bin/
+
+- name: export KUBECONFIG
+  shell: export KUBECONFIG=/home/{{ ansible_user }}/.kube/config
+
+- name: Verify kubectl cmd
+  command: kubectl get pods --all-namespaces
+
+- name: Label the node as a gateway
+  command: kubectl label node {{ hostname_fixup.stdout }} submariner.io/gateway=true
+
+- copy:
+    src: ./broker-info.subm
+    dest: /home/{{ ansible_user }}/broker-info.subm
+
+- name: Join the submariner node to the broker
+  shell: |
+    CLUSTER_CIDR={{ submariner_cluster_cidr }} \
+    EXTERNAL_CIDR={{ submariner_external_cidr }} \
+    subctl --kubeconfig /home/{{ ansible_user }}/.kube/config \
+    join /home/{{ ansible_user }}/broker-info.subm \
+    --clusterid {{ hostname_fixup.stdout }}-cluster --natt=false \
+    --clustercidr=${CLUSTER_CIDR},${EXTERNAL_CIDR} \
+    --cable-driver {{ submariner_cable_driver }}
