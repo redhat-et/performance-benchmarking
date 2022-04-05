@@ -40,13 +40,6 @@
          wait: true
       register: brokerIp
 
-##############################################################
-    - name: "WTF0 Broker Instance Addresses"
-      debug:
-        msg:
-        - "New Instance Address: {{ brokerIp.instances[0].private_ip_address }}"
-############################################################
-
     - name: Updating the broker node's public ip in inventory
       lineinfile:
          path: "{{ inventory_location }}"
@@ -72,13 +65,6 @@
          state: running
          wait: true
       register: secondaryGatewayNodeIP
-
-##############################################################
-    - name: "WTF1 Broker Instance Addresses"
-      debug:
-        msg:
-        - "New Instance Address: {{ brokerIp.instances[0].private_ip_address }}"
-############################################################
 
     - name: Updating the secondary gateway node's public ip in inventory
       lineinfile:
@@ -106,13 +92,6 @@
          wait: true
       register: nodeIP
       loop: "{{ range(0, node_count | int) }}"
-
-##############################################################
-    - name: "WTF2 Broker Instance Addresses"
-      debug:
-        msg:
-        - "New Instance Address: {{ brokerIp.instances[0].private_ip_address }}"
-############################################################
 
     - name: Updating the worker node's public ip in inventory
       lineinfile:
