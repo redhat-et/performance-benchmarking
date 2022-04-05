@@ -1,0 +1,20 @@
+# roles get branched from here
+- hosts: brokerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-broker
+
+# Sets up the secondary gateway, uncomment if not using the active-gateway branch
+- hosts: secondaryGatewayNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-secondary-gateway
+
+- hosts: workerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-worker
+

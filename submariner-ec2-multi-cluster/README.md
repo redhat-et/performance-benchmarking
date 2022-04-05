@@ -1,5 +1,7 @@
 # Kubernetes/Submariner Multi-Cluster Ansible Deployment for AWS EC2
 
+TLDR; the topology for this setup is a multi-cluster deployment along with a broker node without any worker nodes.
+
 This repo fully automates the deployment of Kubernetes on EC2 and can scale out dynamically to however
 many standalone cluster nodes as desired. The playbooks use the latest changes to the `amazon.aws.ec2_instance` module.
 
