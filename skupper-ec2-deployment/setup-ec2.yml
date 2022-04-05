@@ -37,11 +37,6 @@
          wait: true
       register: hubNode
 
-    - lineinfile:
-        path: "{{ inventory_location }}"
-        regexp: "[^%]*ssh"
-        state: absent
-
     - name: Updating the hub node's public ip in inventory
       lineinfile:
          path: "{{ inventory_location }}"

@@ -37,11 +37,6 @@
          wait: true
       register: brokerIp
 
-    - lineinfile:
-        path: "{{ inventory_location }}"
-        regexp: "[^%]*ssh"
-        state: absent
-
     - name: Updating the broker node's public ip in inventory
       lineinfile:
          path: "{{ inventory_location }}"

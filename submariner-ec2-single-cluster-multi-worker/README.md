@@ -1,5 +1,7 @@
 # Kubernetes/Submariner Multi-Cluster Ansible Deployment for AWS EC2
 
+TLDR; the topology for this setup is a single-cluster deployment, broker node with as many worker nodes as specified.
+
 This repo fully automates the deployment of Kubernetes on EC2 and can scale out dynamically to however
 many standalone cluster nodes as desired. The playbooks use the latest changes to the `amazon.aws.ec2_instance` module.
 
@@ -120,7 +122,7 @@ You can find the addresses for the installed nodes in `ip.txt`, for example:
 [brokerNode]
   54.147.129.101 ansible_user=fedora ansible_connection=ssh
 
- [clusterNode]
+ [workerNode]
   34.228.144.25 ansible_user=fedora ansible_connection=ssh
   54.226.11.155 ansible_user=fedora ansible_connection=ssh
   54.174.214.75 ansible_user=fedora ansible_connection=ssh

@@ -1,0 +1,8 @@
+[brokerNode]
+54.208.157.5 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.38
+
+[secondaryGatewayNode]
+34.207.72.52 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.38
+
+[workerNode]
+3.93.219.98 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.38

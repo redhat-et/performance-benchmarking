@@ -1,5 +1,7 @@
 [brokerNode]
 
+[altGatewayNode]
+
 [clusterNode]
 
 
