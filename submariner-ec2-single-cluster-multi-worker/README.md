@@ -1,4 +1,4 @@
-# Kubernetes/Submariner Multi-Cluster Ansible Deployment for AWS EC2
+# Kubernetes/Submariner Single-Cluster, Multi-Gateway, Multi-Worker, Ansible Deployment for AWS EC2
 
 TLDR; the topology for this setup is a single-cluster deployment, broker node with as many worker nodes as specified.
 
