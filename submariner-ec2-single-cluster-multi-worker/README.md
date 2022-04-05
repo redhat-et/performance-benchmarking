@@ -10,6 +10,40 @@ performance testing, so the lighter the weight the better for our needs. Once th
 then provisioned for multi-cluster service exports. We will be adding Microshift as an alternative lightweight 
 distribution as soon as this PR merges [Allow MicroShift to join new worker nodes](https://github.com/redhat-et/microshift/pull/471).
 
+### Quickstart for single-cluster multi-submariner gateway, multi-worker
+
+- Edit `ansible.cfg` adding in the relevant information. For the Axon group, `private_key_file` in
+  `ansible.cfg` in vars.yaml is the main field to change is the location of the perf testing private key.
+  Put the private key in the same directory as ansible.cfg or specify the path and set the key permissions
+  .e.g. `chmod 0400 axon-perf-testing.pem`
+- One broker node and one secondary gatway nodes are spawned in the same cluster.
+- In `vars.yml` the `node_count:` key specifies how many worker nodes are spawned.
+- The broker node is also the k8s master node for the cluster.
+- broker-info.shim and k8s server tokens are stored in the base directory.
+
+```sh
+ansible-vault create credentials.yml
+```
+
+- Setup the EC2 nodes by running the playbook and specify the host root password when asked for `BECOME PASSWORD` and then supply your
+  vault password when asked.
+
+This will result in:
+- 1x broker node also running as the k8s master
+- 1x secondary gateway node running as a k8s worker
+- (n)x k8s worker nodes, n=node_count value specified in `vars.yml`
+
+```sh
+ansible-playbook --ask-vault-pass setup-ec2.yml
+```
+
+- Next deploy the k8s/submariner playbooks:
+- TODO: this last step is still a WIP. Kubeconfig needs to be copied down from the master note to the submariner secondary gateway in order to run submariner pods.
+
+```sh
+ansible-playbook setup-k8s.yml
+```
+
 ### Setup
 
 - This setup installs the specified number of k8s clusters, installs submariner and joins them to the broker.
