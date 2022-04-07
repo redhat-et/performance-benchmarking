@@ -1,14 +1,10 @@
 ---
-# tasks file for k8s-broker
+# tasks file for perf-collector
 - name: Register the private address of the EC2 host
   shell: hostname -I | awk "{print \$1}"
   register: node_ip
 
-- name: Register the hostname EC2 host
-  command: hostname
-  register: node_hostname
-
-- name: Create new hostname for Lighthouse
+- name: Register the hostname EC2 host fixup
   shell: echo {{node_ip.stdout }}-cluster | sed 's/\./-/g'
   register: hostname_fixup
 
@@ -25,7 +21,7 @@
 - name: Set the new hostname
   command: sudo hostnamectl set-hostname {{ hostname_fixup.stdout }}
 
-- name: Display the new fixup hostname
+- name: Display fixup hostname
   debug:
     msg: New hostname is "{{ hostname_fixup.stdout }}"
 
@@ -33,7 +29,7 @@
   pause:
     seconds: 20
 
-- name: Install k3s on the broker node
+- name: Install k3s on the performance collector cluster node
   shell: curl -sfL https://get.k3s.io | sh -
   ignore_errors: True
 
@@ -64,23 +60,6 @@
     regexp: '127.0.0.1'
     replace: '{{ node_ip.stdout }}'
 
-- name: Register the join token
-  command: cat node-token chdir=/var/lib/rancher/k3s/server
-  register: k8s_token
-
-- name: Display the worker join token
-  debug:
-    msg: "{{ k8s_token.stdout }}"
-
-- local_action:
-    module: copy
-    content: "{{ k8s_token.stdout }}"
-    dest: k8s-join-token-{{ansible_date_time.iso8601}}
-
-- name: Set the join token
-  set_fact:
-    k8s_token: "{{ k8s_token.stdout }}"
-
 - name: Install Submariner
   shell: |
     curl -Ls https://get.submariner.io/ > /home/{{ ansible_user }}/install-sub
@@ -97,15 +76,9 @@
 - name: Label the node as a gateway
   command: kubectl label node {{ hostname_fixup.stdout }} submariner.io/gateway=true
 
-- name: Start the submariner broker
-  shell: |
-    subctl --kubeconfig /home/{{ ansible_user }}/.kube/config deploy-broker --globalnet
-    kubectl wait --for=condition=ready pod -l name=submariner-operator --timeout=60s -n submariner-operator
-
-- fetch:
-    src: /home/{{ ansible_user }}/broker-info.subm
-    dest: ./
-    flat: true
+- copy:
+    src: ./broker-info.subm
+    dest: /home/{{ ansible_user }}/broker-info.subm
 
 - name: Join the submariner node to the broker
   shell: |

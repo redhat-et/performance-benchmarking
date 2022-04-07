@@ -86,6 +86,6 @@
     EXTERNAL_CIDR={{ submariner_external_cidr }} \
     subctl --kubeconfig /home/{{ ansible_user }}/.kube/config \
     join /home/{{ ansible_user }}/broker-info.subm \
-    --clusterid {{ hostname_fixup.stdout }}-cluster --natt=false \
+    --clusterid {{ hostname_fixup.stdout }} --natt=false \
     --clustercidr=${CLUSTER_CIDR},${EXTERNAL_CIDR} \
     --cable-driver {{ submariner_cable_driver }}

@@ -64,6 +64,11 @@
     regexp: '127.0.0.1'
     replace: '{{ node_ip.stdout }}'
 
+- fetch:
+    src: /home/{{ ansible_user }}/.kube/config
+    dest: ./
+    flat: true
+
 - name: Register the join token
   command: cat node-token chdir=/var/lib/rancher/k3s/server
   register: k8s_token
@@ -72,10 +77,10 @@
   debug:
     msg: "{{ k8s_token.stdout }}"
 
-- local_action:
-    module: copy
-    content: "{{ k8s_token.stdout }}"
-    dest: k8s-join-token-{{ansible_date_time.iso8601}}
+- fetch:
+    src: /var/lib/rancher/k3s/server/node-token
+    dest: ./k8s-join-token-{{ansible_date_time.iso8601}}
+    flat: true
 
 - name: Set the join token
   set_fact:
@@ -125,6 +130,6 @@
     EXTERNAL_CIDR={{ submariner_external_cidr }} \
     subctl --kubeconfig /home/{{ ansible_user }}/.kube/config \
     join /home/{{ ansible_user }}/broker-info.subm \
-    --clusterid {{ hostname_fixup.stdout }}-cluster --natt=false \
+    --clusterid {{ hostname_fixup.stdout }} --natt=false \
     --clustercidr=${CLUSTER_CIDR},${EXTERNAL_CIDR} \
     --cable-driver {{ submariner_cable_driver }}

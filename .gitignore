@@ -22,5 +22,6 @@
 credentials.yml
 k8s-join-token*
 broker-info.subm
-
-
+tester*
+*.bk
+config

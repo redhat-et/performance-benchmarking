@@ -1,6 +1,6 @@
 # deploy to ec2 instances
 - hosts: localhost
-  vars_files: 
+  vars_files:
     - credentials.yml
     - vars.yml
   tasks:
@@ -23,7 +23,7 @@
     # Broker and Gateway Node Setup
     - name: Launching Submariner Broker Node
       amazon.aws.ec2_instance:
-         name: "broker-node"
+         name: "cluster1-ha1-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -44,12 +44,12 @@
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "brokerNode"
-         line: "[brokerNode]\n{{ brokerIp['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}}\n"
+         line: "[brokerNode]\n{{ brokerIp['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-ha1-node\n"
 
     # Experimental Second Gateway Node Setup
     - name: Launching Secondary Submariner Gateway Node
       amazon.aws.ec2_instance:
-         name: "secondary-gateway-node"
+         name: "cluster1-ha2-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -70,12 +70,12 @@
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "secondaryGatewayNode"
-         line: "[secondaryGatewayNode]\n{{ secondaryGatewayNodeIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}}\n"
+         line: "[secondaryGatewayNode]\n{{ secondaryGatewayNodeIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-ha2-node\n"
 
     # Perf Collector Node Setup
     - name: Launching Performance Collector Node
       amazon.aws.ec2_instance:
-         name: "perf-collector-node"
+         name: "cluster2-perf-target"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -96,13 +96,12 @@
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "perfCollectorNode"
-         line: "[perfCollectorNode]\n{{ perfCollectorIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}}\n"
-
+         line: "[perfCollectorNode]\n{{ perfCollectorIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster2-perf-target\n"
 
     # Worker Node(s) Setup
     - name: Launching Worker Nodes
       amazon.aws.ec2_instance:
-         name: "worker-node-{{ item+1 }}"
+         name: "cluster1-worker{{ item+1 }}-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -117,12 +116,12 @@
          aws_secret_key: "{{ secret_key }}"
          state: running
          wait: true
-      register: nodeIP
+      register: node
       loop: "{{ range(0, node_count | int) }}"
 
     - name: Updating the worker node's public ip in inventory
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "workerNode"
-         line: "[workerNode]\n{{ nodeIP['results'][item]['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}}"
+         line: "[workerNode]\n{{ node['results'][item]['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname={{ node['results'][item]['instances'][0]['tags'].Name}}"
       loop: "{{ range(0, node_count | int) }}"
