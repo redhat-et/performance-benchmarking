@@ -1,0 +1,62 @@
+# roles get branched from here
+- hosts: brokerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-broker
+
+# Sets up the secondary gateway, comment to deploy only one active gateway
+#- hosts: secondaryGatewayNode
+#  vars_files:
+#    - vars.yml
+#  roles:
+#    - role: k8s-secondary-gateway
+
+- hosts: cluster2PerfCollectorNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-perf-collector
+
+- hosts: cluster1WorkerNodes
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-cluster1-worker
+
+- hosts: cluster2WorkerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-cluster2-worker
+
+- hosts: brokerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: submariner-cluster1-broker
+
+- hosts: cluster2PerfCollectorNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: submariner-cluster2
+
+- hosts: cluster2PerfCollectorNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-grafana
+
+- hosts: cluster2PerfCollectorNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-netserver
+
+- hosts: brokerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-netperf
+

@@ -1,7 +1,0 @@
-[brokerNode]
-
-[secondaryGatewayNode]
-
-[workerNode]
-
-[perfCollectorNode]

@@ -1,0 +1,25 @@
+---
+# tasks file for deploy-grafana
+- name: Install Packages
+  dnf:
+    name:
+      - docker
+      - wget
+    state: latest
+    update_cache: yes
+
+- name: Start a container runtime
+  shell: sudo systemctl start docker
+
+- name: Start the Grafana/Graphite Pod
+  shell: |
+    docker run -d \
+        --name graphite-grafana \
+        --restart always \
+        -p 80:80 \
+        -p 2003-2004:2003-2004 \
+        quay.io/networkstatic/graphite-grafana
+
+- name: Pause for 10s for the Graphite/Grafana stack to initialize
+  pause:
+    seconds: 10

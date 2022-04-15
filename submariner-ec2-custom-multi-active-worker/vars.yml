@@ -1,0 +1,18 @@
+aws_region: us-east-1                 # AWS region
+vpc_id: vpc-0566e09aa71f553c1         # VPC id from your aws account
+aws_subnet: subnet-0f8a1403fde2af94e  # VPC subnet id from your aws account
+aws_image_id: ami-08b4ee602f76bff79   # Fedora 35 (this can be changed to most any Linux distro)
+aws_key_name: axon-perf-testing       # the key pair on your aws account to use
+aws_instance_type: t2.large           # t2.micro is free tier eligable, but you can use any type to scale up, more examples [t2.large, t2.xlarge, t2.2xlarge]
+ansible_user: fedora                  # this is the default user ID for your AMI image. Example, AWS AMI is ec2-user etc
+node_count: 2                         # the number of cluster nodes you want to deploy
+secgroup_name: PerfTesting            # the security group name can be an existing group or else it will be created by the playbook
+security_group_description: "Perf Testing for VPC perf-testing-vpc / vpc-0566e09aa71f553c1"
+inventory_location: ip.txt            # leaving this as is will use the ip.txt file in the base directory
+submariner_cable_driver: vxlan        # [vxlan, ipsec]
+submariner_cluster_cidr: 10.42.0.0/16
+submariner_external_cidr: 10.10.0.0/24
+submariner_subctl_binary_url  : https://perf-testing-submariner-s3.s3.amazonaws.com/subctl # url of the custom subctl binary
+submariner_broker_repository: quay.io/networkstatic # custom image repo broker deploys
+submariner_image_override: quay.io/networkstatic    # custom image repo for submariner deploys
+
