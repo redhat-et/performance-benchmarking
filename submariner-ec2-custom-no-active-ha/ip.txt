@@ -1,0 +1,12 @@
+[brokerNode]
+54.90.99.94 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.167 hostname=cluster1-noha1-node
+
+[cluster2PerfCollectorNode]
+35.174.168.147 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.167 subctl_broker=10.10.0.167 hostname=cluster2-noha1-perf-target-node
+
+[cluster1WorkerNodes]
+3.86.225.38 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.167 hostname=cluster1-noha-worker1-node
+
+[cluster2WorkerNode]
+18.207.213.172 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.76 hostname=cluster2-noha-worker1-node
+

@@ -2,9 +2,18 @@
 # tasks file for deploy-netperf
 - name: Import variables from perfCollectorNode
   set_fact:
-    NETSERVER_ADDRESS: "{{ hostvars[groups['cluster2PerfCollectorNode'][0]]['netserver_target'].stdout }}"
-    GRAFANA_ADDRESS: "{{ hostvars[groups['cluster2PerfCollectorNode'][0]]['node_ip'].stdout }}"
-    GRAFANA_WEB: "{{ hostvars[groups['cluster2PerfCollectorNode'][0]]['GRAFANA_PUB_ADDRESS'].stdout }}"
+    NETSERVER_ADDRESS: "{{ hostvars[groups['cluster2WorkerNode'][0]]['worker2_node_ip'].stdout }}"
+#    GRAFANA_ADDRESS: "{{ hostvars[groups['cluster2WorkerNode'][0]]['worker2_node_ip'].stdout }}"
+
+- name: Import TSDB Target from cluster2-worker if not defined in vars.yml
+  set_fact:
+    GRAFANA_ADDRESS: "{{ hostvars[groups['cluster2WorkerNode'][0]]['worker2_node_ip'].stdout }}"
+  when: external_grafana_collector | default('', true) | trim == ''
+
+- name: Set the TSDB Target if it is defined in vars.yml
+  set_fact:
+    GRAFANA_ADDRESS: "{{ external_grafana_collector }}"
+  when: external_grafana_collector | default('', true) | trim != ''
 
 - name: Verify kubectl cmd
   command: kubectl get pods --all-namespaces --kubeconfig /home/{{ ansible_user }}/config
@@ -83,7 +92,3 @@
 
 - name: Starting the Netperf daemonset
   command: kubectl apply -f /home/{{ ansible_user }}/cloud-bandwidth-netperf-ds.yaml --kubeconfig /home/{{ ansible_user }}/config
-
-- name: Display the Grafana Public Web Address
-  debug:
-    msg: "{{ GRAFANA_WEB }}"

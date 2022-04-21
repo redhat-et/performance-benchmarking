@@ -33,6 +33,11 @@
            source_dest_check: false
          subnet_id: "{{ aws_subnet }}"
          security_group: "{{ secgroup_name }}"
+         volumes:
+           - device_name: /dev/sda1
+             ebs:
+               volume_size: 30
+               delete_on_termination: true
          tags:
            NodeType: "submariner-broker-gateway-node"
          aws_access_key: "{{ access_key }}"
@@ -47,36 +52,41 @@
          regexp: "brokerNode"
          line: "[brokerNode]\n{{ brokerIp['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-ha1-node\n"
 
-    # Experimental Second Gateway Node Setup
-#    - name: Launching Secondary Submariner Gateway Node
-#      amazon.aws.ec2_instance:
-#         name: "cluster1-ha2-node"
-#         aws_region: "{{ aws_region }}"
-#         key_name: "{{ aws_key_name }}"
-#         instance_type: "{{ aws_instance_type }}"
-#         image_id: "{{ aws_image_id }}"
-#         security_group: "{{ secgroup_name }}"
-#         network:
-#           assign_public_ip: true
-#         subnet_id: "{{ aws_subnet }}"
-#         tags:
-#           NodeType: "submariner-secondary-gateway-node"
-#         aws_access_key: "{{ access_key }}"
-#         aws_secret_key: "{{ secret_key }}"
-#         state: running
-#         wait: true
-#      register: secondaryGatewayNodeIP
-#
-#    - name: Updating the secondary gateway node's public ip in inventory
-#      lineinfile:
-#         path: "{{ inventory_location }}"
-#         regexp: "secondaryGatewayNode"
-#         line: "[secondaryGatewayNode]\n{{ secondaryGatewayNodeIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-ha2-node-node\n"
-
-    # Perf Collector Node Setup
-    - name: Launching Performance Collector Node
+    # Experimental Cluster-1 Secondary Gateway Node Setup
+    - name: Launching Secondary Submariner Gateway Node
       amazon.aws.ec2_instance:
-         name: "cluster2-perf-target-node"
+         name: "cluster1-ha2-node"
+         aws_region: "{{ aws_region }}"
+         key_name: "{{ aws_key_name }}"
+         instance_type: "{{ aws_instance_type }}"
+         image_id: "{{ aws_image_id }}"
+         security_group: "{{ secgroup_name }}"
+         volumes:
+           - device_name: /dev/sda1
+             ebs:
+               volume_size: 30
+               delete_on_termination: true
+         network:
+           assign_public_ip: true
+         subnet_id: "{{ aws_subnet }}"
+         tags:
+           NodeType: "submariner-secondary-gateway-node"
+         aws_access_key: "{{ access_key }}"
+         aws_secret_key: "{{ secret_key }}"
+         state: running
+         wait: true
+      register: secondaryGatewayNodeIP
+
+    - name: Updating the secondary gateway node's public ip in inventory
+      lineinfile:
+         path: "{{ inventory_location }}"
+         regexp: "secondaryGatewayNode"
+         line: "[secondaryGatewayNode]\n{{ secondaryGatewayNodeIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-ha2-node\n"
+
+#    # Perf Collector Node Setup
+    - name: Launching Cluster-2 K8s Master Performance Collector Node
+      amazon.aws.ec2_instance:
+         name: "cluster2-ha1-perf-target-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -93,13 +103,44 @@
          wait: true
       register: perfCollectorIP
 
-    - name: Updating the secondary gateway node's public ip in inventory
+    - name: Updating the performance collector gateway node's public ip in inventory
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "cluster2PerfCollectorNode"
-         line: "[cluster2PerfCollectorNode]\n{{ perfCollectorIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster2-perf-target-node\n"
+         line: "[cluster2PerfCollectorNode]\n{{ perfCollectorIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} subctl_broker={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster2-ha1-perf-target-node\n"
 
-    # Worker Node(s) Setup
+    # Experimental Cluster-2 Secondary Gateway Node Setup
+    - name: Launching Cluster-2 K8s Worker Secondary Submariner Gateway Node
+      amazon.aws.ec2_instance:
+         name: "cluster2-ha2-node"
+         aws_region: "{{ aws_region }}"
+         key_name: "{{ aws_key_name }}"
+         instance_type: "{{ aws_instance_type }}"
+         image_id: "{{ aws_image_id }}"
+         security_group: "{{ secgroup_name }}"
+         volumes:
+           - device_name: /dev/sda1
+             ebs:
+               volume_size: 30
+               delete_on_termination: true
+         network:
+           assign_public_ip: true
+         subnet_id: "{{ aws_subnet }}"
+         tags:
+           NodeType: "submariner-secondary-gateway-node"
+         aws_access_key: "{{ access_key }}"
+         aws_secret_key: "{{ secret_key }}"
+         state: running
+         wait: true
+      register: cluster2SecondaryGatewayNodeIP
+
+    - name: Updating cluster-2 secondary gateway node's public ip in inventory
+      lineinfile:
+         path: "{{ inventory_location }}"
+         regexp: "cluster2SecondaryGatewayNode"
+         line: "[cluster2SecondaryGatewayNode]\n{{ cluster2SecondaryGatewayNodeIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ perfCollectorIP['instances'][0]['private_ip_address']}} hostname=cluster2-ha2-node\n"
+
+    # Cluster-1 Worker Node(s) Setup
     - name: Launching Cluster-1 Worker Nodes
       amazon.aws.ec2_instance:
          name: "cluster1-worker{{ item+1 }}-node"
@@ -120,14 +161,14 @@
       register: node
       loop: "{{ range(0, node_count | int) }}"
 
-    - name: Updating the worker node's public ip in inventory
+    - name: Updating cluster-1 worker nodes public ip in inventory
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "cluster1WorkerNodes"
          line: "[cluster1WorkerNodes]\n{{ node['results'][item]['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname={{ node['results'][item]['instances'][0]['tags'].Name}}\n"
       loop: "{{ range(0, node_count | int) }}"
 
-    # Worker Node(s) Setup
+    # Cluster-2 Worker Node Setup (single node for netserver target)
     - name: Launching Cluster-2 Worker Node
       amazon.aws.ec2_instance:
          name: "cluster2-worker1-node"
@@ -148,7 +189,7 @@
       register: node
       loop: "{{ range(0, 1 | int) }}"
 
-    - name: Updating the worker node's public ip in inventory
+    - name: Updating the cluster-2 worker node's public ip in inventory
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "cluster2WorkerNode"

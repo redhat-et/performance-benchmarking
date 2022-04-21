@@ -8,6 +8,20 @@
   pause:
     seconds: 10
 
+- name: Register the private address of cluster-2 worker host
+  shell: hostname -I | awk "{print \$1}"
+  register: worker2_node_ip
+
+- name: Install Kubectl
+  shell: |
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x ./kubectl
+    sudo mv ./kubectl /usr/local/bin/kubectl
+
+- copy:
+    src: ./config-cluster2
+    dest: /home/{{ ansible_user }}/config
+
 - name: Display the k8s join token on the worker node
   debug:
     msg: "{{ hostvars[groups['cluster2PerfCollectorNode'][0]]['k8s_token'] }}"

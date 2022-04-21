@@ -1,0 +1,60 @@
+---
+# tasks file for k8s-cluster1-secondary-gateway
+- name: Register the private address of the EC2 host
+  shell: hostname -I | awk "{print \$1}"
+  register: node_ip
+
+- name: Display the fixup hostname
+  debug:
+    msg: New hostname will be "{{ hostname }}"
+
+- name: Add the fixed up hostname into hosts file
+  shell: echo "{{ node_ip.stdout }} {{ hostname }}" | sudo tee -a /etc/hosts
+
+# the hostname is changed here to conform to a regex check in lighthouse of the cluster-id
+# of '[a-z0-9]([-a-z0-9]*[a-z0-9])?')] which restricts the default EC2 hostname. The node
+# is not rebooted so the command prompt will not reflect the new hostname.
+- name: Set the new hostname
+  command: sudo hostnamectl set-hostname {{ hostname }}
+
+- name: Pause for 20s to allow for the hostname change to stabalize
+  pause:
+    seconds: 20
+
+- name: Display the k8s join token on the worker node
+  debug:
+    msg: "{{ hostvars[groups['brokerNode'][0]]['k8s_token'] }}"
+
+- name: Display the k8s master IP address on the secondary gateway node used to join
+  debug:
+    msg: "{{ k8s_master }}"
+
+- name: Install Kubectl
+  shell: |
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x ./kubectl
+    sudo mv ./kubectl /usr/local/bin/kubectl
+
+- copy:
+    src: ./config
+    dest: /home/{{ ansible_user }}/config
+
+- name: Install k3s as a worker on the secondary gateway
+  vars:
+    K8S_TOKEN: "{{ hostvars[groups['brokerNode'][0]]['k8s_token'] }}"
+    K8S_MASTER: "{{ k8s_master }}"
+  shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ K8S_MASTER }}:6443 K3S_TOKEN={{ K8S_TOKEN }} sh -
+#  shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ K8S_MASTER }}:6443 K3S_TOKEN={{ K8S_TOKEN }} INSTALL_K3S_EXEC="server --no-deploy traefik" sh -
+  ignore_errors: True
+
+- name: Pause for 20 seconds to finishing joining the k8s cluster
+  pause:
+    seconds: 20
+
+- name: Verify kubectl cmd
+  become_user: "{{ ansible_user }}"
+  command: kubectl get pods --all-namespaces --kubeconfig /home/{{ ansible_user }}/config
+
+- name: Label the node as a gateway
+  become_user: "{{ ansible_user }}"
+  command: kubectl label node {{ hostname }} submariner.io/gateway=true --overwrite --kubeconfig /home/{{ ansible_user }}/config
