@@ -10,6 +10,12 @@ gateways once the issue is resolved, active/active will be the default for the p
 <img src="netperf-aggregate.png" alt="drawing" width="70%"/>
 </p>
 
+- The specific topology looks like the following. The number of worker nodes running conn current performance tests is set in the `vars.yml` file `node_count`.
+
+<p align="center">
+<img src="active-active-submariner.png" alt="drawing" width="80%"/>
+</p>
+
 ### Quickstart for multi-cluster multi-submariner gateway, multi-worker
 
 - Edit `ansible.cfg` adding in the relevant information. For the Axon group, `private_key_file` in
@@ -45,6 +51,7 @@ ansible-playbook setup-k8s.yml
 ```
 
 - Once the playbooks are finished, look for the output of the Ansible task that provides the Grafana web address.
+- The Grafana/Graphite collector can also be a separate standalone service. By adding the env `external_grafana_collector` to `vars.yml` an instance will not be provisioning by the plays.
 
 ```
  msg: Grafana URL is at http://54.165.144.148
@@ -54,6 +61,12 @@ Copy the json in [grafana-dashboard.json](./grafana-dashboard.json) and paste it
 
 ![](https://github.com/nerdalert/cloud-bandwidth/raw/master/docs/images/grafana-import-sm.png)
 
+- Debug netperf and tsdb exports by looking at the cloud bandwidth logs like so:
+
+```shell
+export KUBECONFIG=/home/fedora/config
+kubectl logs cloud-bandwidth-netperf-ds-n96zp -n kube-system
+```
 
 ### Verbose Setup
 

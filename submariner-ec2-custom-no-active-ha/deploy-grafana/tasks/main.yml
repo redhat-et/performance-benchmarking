@@ -5,8 +5,6 @@
     name:
       - docker
       - wget
-      - make
-      - git
     state: latest
     update_cache: yes
 
@@ -25,4 +23,22 @@
 - name: Pause for 10s for the Graphite/Grafana stack to initialize
   pause:
     seconds: 10
+
+- name: Install YQ
+  shell: |
+    sudo dnf -y install wget
+    sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+    sudo chmod a+x /usr/local/bin/yq
+
+- name: Patch the traefik svc port to fix the overlap with the grafana bind address
+  shell: |
+    kubectl patch svc traefik --type merge -p '{"spec":{"ports": [{"port": 81,"name":"web"}]}}' -n kube-system --kubeconfig /home/{{ ansible_user }}/config
+
+- name: Register the public address of the EC2 host
+  shell: wget -qO- https://api.ipify.org; echo
+  register: GRAFANA_PUB_ADDRESS
+
+- name: Display the Grafana Public URL
+  debug:
+    msg: "Grafana URL is at http://{{ GRAFANA_PUB_ADDRESS.stdout }}"
 

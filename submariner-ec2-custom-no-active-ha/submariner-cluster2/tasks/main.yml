@@ -14,7 +14,7 @@
   shell: |
     curl -Ls https://get.submariner.io/ > /home/{{ ansible_user }}/install-sub
     chmod +x /home/{{ ansible_user }}/install-sub
-    VERSION=devel /home/{{ ansible_user }}/install-sub
+    /home/{{ ansible_user }}/install-sub
     sudo cp /root/.local/bin/subctl /usr/local/bin/subctl
 
 - name: Pause for 5s to allow for stabilization
@@ -38,18 +38,9 @@
 - name: Change the owner of the home dir
   shell: "sudo chown -hR {{ ansible_user }}:{{ ansible_user }} /home/{{ ansible_user }}/"
 
-# Uncomment for Active/Active branch
-- name: Download the custom subctl binary
-  shell: |
-    curl {{ submariner_subctl_binary_url }} --output /usr/local/bin/subctl
-    chmod +x /usr/local/bin/subctl
-
 - name: Pause for 2s to allow for convergence
   pause:
     seconds: 2
-
-- name: Display the new subctl version
-  command: subctl version
 
 # Uncomment for active/active HA experimental branch
 - name: Join the submariner node to the broker
@@ -57,16 +48,10 @@
     subctl --kubeconfig /home/{{ ansible_user }}/config \
     join /home/{{ ansible_user }}/broker-info.subm \
     --clusterid {{ hostname }} \
+    --clustercidr={{ submariner_cluster_cidr_cluster2 }}  \
     --cable-driver {{ submariner_cable_driver }} \
     --nattport 4500 \
     --natt=false \
-    --clustercidr={{ submariner_cluster_cidr }} \
-    --multi-active-gateway=true \
-    --image-override=submariner-operator={{ submariner_image_override }}/submariner-operator:devel \
-    --image-override=submariner-globalnet={{ submariner_image_override }}/submariner-globalnet:devel \
-    --image-override=submariner-gateway={{ submariner_image_override }}/submariner-gateway:devel \
-    --image-override=submariner-route-agent={{ submariner_image_override }}/submariner-route-agent:devel \
-    --image-override=submariner-networkplugin-syncer={{ submariner_image_override }}/submariner-networkplugin-syncer:devel
 
 - name: Pause for 60s to Submariner join to complete on the performance collector cluster
   pause:

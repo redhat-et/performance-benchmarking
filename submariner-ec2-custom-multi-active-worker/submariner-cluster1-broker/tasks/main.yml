@@ -42,7 +42,6 @@
   shell: |
     subctl --kubeconfig /home/{{ ansible_user }}/config deploy-broker \
      --components service-discovery,connectivity \
-    --globalnet \
     --repository {{ submariner_broker_repository }}
 
 - name: Wait for submariner-operator to become ready
@@ -79,7 +78,7 @@
     subctl --kubeconfig /home/{{ ansible_user }}/config \
     join /home/{{ ansible_user }}/broker-info.subm \
     --clusterid {{ hostname }} \
-    --clustercidr={{ submariner_cluster_cidr }} \
+    --clustercidr={{ submariner_cluster_cidr_cluster1 }} \
     --nattport 4500 \
     --cable-driver {{ submariner_cable_driver }} \
     --natt=false \

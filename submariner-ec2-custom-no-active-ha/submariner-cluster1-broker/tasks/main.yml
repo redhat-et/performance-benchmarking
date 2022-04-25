@@ -14,21 +14,12 @@
   shell: |
     curl -Ls https://get.submariner.io/ > /home/{{ ansible_user }}/install-sub
     chmod +x /home/{{ ansible_user }}/install-sub
-    VERSION=devel /home/{{ ansible_user }}/install-sub
+    /home/{{ ansible_user }}/install-sub
     sudo cp /root/.local/bin/subctl /usr/local/bin/subctl
-
-# Uncomment for Active/Active branch
-- name: Download the custom subctl binary
-  shell: |
-    curl {{ submariner_subctl_binary_url }} --output /usr/local/bin/subctl
-    chmod +x /usr/local/bin/subctl
 
 - name: Pause for 2s to allow for convergence
   pause:
     seconds: 2
-
-- name: Display the new subctl version
-  command: subctl version
 
 - name: Label the node as a gateway
   command: kubectl label node {{ hostname }} submariner.io/gateway=true --overwrite --kubeconfig /home/{{ ansible_user }}/config
@@ -37,13 +28,10 @@
   pause:
     seconds: 5
 
-# Uncomment for Active/Active branch
 - name: Start the submariner broker
   shell: |
     subctl --kubeconfig /home/{{ ansible_user }}/config deploy-broker \
-     --components service-discovery,connectivity \
-    --globalnet \
-    --repository {{ submariner_broker_repository }}
+    --components service-discovery,connectivity
 
 - name: Wait for submariner-operator to become ready
   command: kubectl wait --for=condition=ready pod -l name=submariner-operator --timeout=60s -n submariner-operator --kubeconfig /home/{{ ansible_user }}/config
@@ -60,18 +48,9 @@
     dest: ./
     flat: true
 
-# Uncomment for Active/Active branch
-- name: Download the custom subctl binary
-  shell: |
-    curl {{ submariner_subctl_binary_url }} --output /usr/local/bin/subctl
-    chmod +x /usr/local/bin/subctl
-
 - name: Pause for 2s to allow for stabilization
   pause:
     seconds: 2
-
-- name: Display the new subctl version
-  command: subctl version
 
 # Uncomment for active/active HA experimental branch
 - name: Join the submariner node to the broker
@@ -79,16 +58,10 @@
     subctl --kubeconfig /home/{{ ansible_user }}/config \
     join /home/{{ ansible_user }}/broker-info.subm \
     --clusterid {{ hostname }} \
-    --clustercidr={{ submariner_cluster_cidr }} \
-    --nattport 4500 \
+    --clustercidr={{ submariner_cluster_cidr_cluster1 }}  \
     --cable-driver {{ submariner_cable_driver }} \
+    --nattport 4500 \
     --natt=false \
-    --multi-active-gateway=true \
-    --image-override=submariner-operator={{ submariner_image_override }}/submariner-operator:devel \
-    --image-override=submariner-globalnet={{ submariner_image_override }}/submariner-globalnet:devel \
-    --image-override=submariner-gateway={{ submariner_image_override }}/submariner-gateway:devel \
-    --image-override=submariner-route-agent={{ submariner_image_override }}/submariner-route-agent:devel \
-    --image-override=submariner-networkplugin-syncer={{ submariner_image_override }}/submariner-networkplugin-syncer:devel
 
 - name: Pause for 60s to allow for stabilization
   pause:

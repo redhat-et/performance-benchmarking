@@ -1,8 +1,5 @@
-# Kubernetes/Submariner Custom Image Performance Testing Active/Active Gateway
-- **Note:** The active/active build is currently throwing an error thus the active/active deployment is commented out. Simply uncomment where it says in the playbooks to run active/active
-gateways once the issue is resolved, active/active will be the default for the playbooks in this directory once stable in this deployment.
+# Kubernetes/Submariner Custom Image Performance Testing Single Gateway (Current Upstream)
 - TLDR; specify the custom images repo and the custom subctl binary build in `vars.yml`
-- Until a bug is sorted it is running in non-active/active mode.
 - A daemonset for Cluster-1 worker nodes is provisioned for polling of the exported netserver StatefulSettefulset running in Cluster-2 and exported via Submariner in Globalnet. This is all automated.
 - The topology and performance traffic flow is depicted in the following diagram:
 
@@ -10,7 +7,13 @@ gateways once the issue is resolved, active/active will be the default for the p
 <img src="netperf-aggregate.png" alt="drawing" width="70%"/>
 </p>
 
-### Quickstart for multi-cluster multi-submariner gateway, multi-worker
+- The specific topology looks like the following. The number of worker nodes running conn current performance tests is set in the `vars.yml` file `node_count`.
+
+<p align="center">
+<img src="single-gateway-submariner.png" alt="drawing" width="80%"/>
+</p>
+
+### Quickstart for multi-cluster, single gateway, multi-worker
 
 - Edit `ansible.cfg` adding in the relevant information. For the Axon group, `private_key_file` in
   `ansible.cfg` in vars.yaml is the main field to change is the location of the perf testing private key.
@@ -45,15 +48,24 @@ ansible-playbook setup-k8s.yml
 ```
 
 - Once the playbooks are finished, look for the output of the Ansible task that provides the Grafana web address.
+- The Grafana/Graphite collector can also be a separate standalone service. By adding the env `external_grafana_collector` to `vars.yml` an instance will not be provisioning by the plays.
 
 ```
- msg: Grafana URL is at http://54.165.144.148
+TASK [deploy-grafana : Display the Grafana Public URL] 
+ok: [54.172.231.57] =>
+  msg: Grafana URL is at http://54.172.231.57
 ```
 
 Copy the json in [grafana-dashboard.json](./grafana-dashboard.json) and paste it into a new dashboard by clicking the + and then import in the Grafana splash page:
 
 ![](https://github.com/nerdalert/cloud-bandwidth/raw/master/docs/images/grafana-import-sm.png)
 
+- Debug netperf and tsdb exports by looking at the cloud bandwidth logs like so:
+
+```shell
+export KUBECONFIG=/home/fedora/config
+kubectl logs cloud-bandwidth-netperf-ds-n96zp -n kube-system
+```
 
 ### Verbose Setup
 
@@ -109,11 +121,15 @@ aws_instance_type: t2.xlarge          # t2.micro is free tier eligible, but you 
 ansible_user: fedora                  # this is the default user ID for your AMI image. Example, AWS AMI is ec2-user etc
 node_count: 14                        # the number of cluster nodes you want to deploy
 secgroup_name: perf_testing_secgroup  # the security group name can be an existing group or else it will be created by the playbook
-security_group_description: "Security Group for Perf/Scale testing allowing ssh ingress"
+security_group_description: "Perf Testing for VPC perf-testing-vpc / vpc-0566e09aa71f553c1"
 inventory_location: ip.txt            # leaving this as is will use the ip.txt file in the base directory
-submariner_cluster_cidr: 10.42.0.0/24
-submariner_external_cidr: 172.31.16.0/20
-submariner_cable_driver: vxlan        # [vxlan, ipsec]
+external_grafana_collector:           # external graphite tsdb/grafana instance rather than the playbooks provisioning one for persistant records
+submariner_cable_driver: vxlan        # [vxlan, libreswan, wireguard]
+submariner_cluster_cidr_cluster1: 10.70.0.0/16
+submariner_service_cidr_cluster1: 10.75.0.0/16
+submariner_cluster_cidr_cluster2: 10.80.0.0/16
+submariner_service_cidr_cluster2: 10.85.0.0/16
+
 ```
 
 ### Run the installation

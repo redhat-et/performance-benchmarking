@@ -5,35 +5,11 @@
   roles:
     - role: k8s-broker-cluster1
 
-#- hosts: secondaryGatewayNode
-#  vars_files:
-#    - vars.yml
-#  roles:
-#    - role: k8s-cluster1-secondary-gateway
-
 - hosts: cluster2PerfCollectorNode
   vars_files:
     - vars.yml
   roles:
     - role: k8s-cluster2-perf-collector-master
-
-#- hosts: cluster2SecondaryGatewayNode
-#  vars_files:
-#    - vars.yml
-#  roles:
-#    - role: k8s-cluster2-secondary-gateway
-
-- hosts: cluster1WorkerNodes
-  vars_files:
-    - vars.yml
-  roles:
-    - role: k8s-cluster1-worker
-
-- hosts: cluster2WorkerNode
-  vars_files:
-    - vars.yml
-  roles:
-    - role: k8s-cluster2-worker
 
 - hosts: brokerNode
   vars_files:
@@ -47,7 +23,19 @@
   roles:
     - role: submariner-cluster2
 
-# Skip role if an external TSDB collector is defined in vars.yml
+- hosts: cluster1WorkerNodes
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-cluster1-worker
+
+- hosts: cluster2WorkerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-cluster2-worker
+
+## Skip role if an external TSDB collector is defined in vars.yml
 - hosts: cluster2WorkerNode
   vars_files:
     - vars.yml

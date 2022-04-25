@@ -2,8 +2,7 @@
 # tasks file for deploy-netperf
 - name: Import variables from perfCollectorNode
   set_fact:
-    NETSERVER_ADDRESS: "{{ hostvars[groups['cluster2WorkerNode'][0]]['worker2_node_ip'].stdout }}"
-#    GRAFANA_ADDRESS: "{{ hostvars[groups['cluster2WorkerNode'][0]]['worker2_node_ip'].stdout }}"
+    NETSERVER_ADDRESS: "{{ hostvars[groups['cluster2WorkerNode'][0]]['netserver_target'].stdout }}"
 
 - name: Import TSDB Target from cluster2-worker if not defined in vars.yml
   set_fact:
@@ -22,7 +21,7 @@
   shell: kubectl get nodes --kubeconfig /home/{{ ansible_user }}/config | grep worker |  awk "{print \$1}"
   register: worker_nodes
 
-- name: Debug to show each line
+- name: Label Worker Nodes for the NetPerf Daemonset
   shell: kubectl label nodes {{ item }} netperf=true --overwrite --kubeconfig /home/{{ ansible_user }}/config
   with_items: "{{ worker_nodes.stdout_lines }}"
 
@@ -60,7 +59,7 @@
                 - name: CBANDWIDTH_POLL_LENGTH
                   value: "45"
                 - name: CBANDWIDTH_DOWNLOAD_PREFIX
-                  value: "bandwidth.netperf"
+                  value: "bandwidth.active_gw.netperf"
                 - name: CBANDWIDTH_GRAFANA_ADDRESS
                   value: "{{ GRAFANA_ADDRESS }}"
                 - name: CBANDWIDTH_GRAFANA_PORT

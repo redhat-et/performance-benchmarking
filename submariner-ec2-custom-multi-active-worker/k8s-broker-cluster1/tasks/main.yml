@@ -17,12 +17,12 @@
   debug:
     msg: New hostname will be "{{ hostname }}"
 
-- name: Pause for 20s to allow for the hostname change to stabilize
+- name: Pause for 10s to allow for the hostname change to stabilize
   pause:
-    seconds: 20
+    seconds: 10
 
 - name: Install k3s on the broker node
-  shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --no-deploy traefik" sh
+  shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --service-cidr {{ submariner_service_cidr_cluster1 }} --cluster-cidr {{ submariner_cluster_cidr_cluster1 }} " sh
   ignore_errors: True
 
 - name: Wait for kubeconfig to be created

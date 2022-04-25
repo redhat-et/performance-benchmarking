@@ -1,18 +1,11 @@
 [brokerNode]
-44.201.162.56 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.104 hostname=cluster1-ha1-node
 
 [secondaryGatewayNode]
-34.204.69.71 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.104 hostname=cluster1-ha2-node
 
 [cluster2PerfCollectorNode]
-34.207.86.94 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.104 subctl_broker=10.10.0.104 hostname=cluster2-ha1-perf-target-node
 
 [cluster2SecondaryGatewayNode]
-3.84.77.88 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.11 hostname=cluster2-ha2-node
 
 [cluster1WorkerNodes]
-54.157.45.161 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.104 hostname=cluster1-worker1-node
 
 [cluster2WorkerNode]
-18.204.21.112 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.11 hostname=cluster2-worker1-node
-

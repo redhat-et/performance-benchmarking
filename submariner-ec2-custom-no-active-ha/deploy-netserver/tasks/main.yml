@@ -1,8 +1,18 @@
 ---
-# tasks file for deploy-netperf
+# tasks file for deploy-netserver
 
 - name: Ensure the submariner-gateway pod is in ready state
   shell: kubectl wait --for=condition=ready pod -l app=submariner-gateway --timeout=120s -n submariner-operator --kubeconfig /home/{{ ansible_user }}/config
+
+- name: Install Submariner
+  shell: |
+    curl -Ls https://get.submariner.io/ > /home/{{ ansible_user }}/install-sub
+    chmod +x /home/{{ ansible_user }}/install-sub
+    /home/{{ ansible_user }}/install-sub
+    sudo cp /root/.local/bin/subctl /usr/local/bin/subctl
+
+- name: Label a worker nodes in cluster-2 for the Netserver StatefulSet
+  shell: kubectl label nodes {{ hostname }} netserver=true --overwrite --kubeconfig /home/{{ ansible_user }}/config
 
 - name: Create the Netserver StatefulSet and service listening on TCP/12865
   shell: |
@@ -40,6 +50,8 @@
             app.kubernetes.io/instance: netserver
             app.kubernetes.io/name: netserver
         spec:
+          nodeSelector:
+            netserver: "true"
           containers:
           - name: netserver
             image: quay.io/networkstatic/netserver
@@ -56,11 +68,6 @@
   pause:
     seconds: 10
 
-- name: Download the Subctl Binary
-  shell: |
-    curl {{ submariner_subctl_binary_url }} --output /usr/local/bin/subctl
-    chmod +x /usr/local/bin/subctl
-
 - name: Export the Netserver StatefulSet with Submariner
   become_user: "{{ ansible_user }}"
   shell: subctl --kubeconfig /home/{{ ansible_user }}/config export service -n default netserver
@@ -70,21 +77,9 @@
     seconds: 5
 
 - name: Register the exported Netserver address
-  shell: kubectl get globalingressip --all-namespaces --kubeconfig /home/{{ ansible_user }}/config | grep netserver | awk "{print \$3}"
+  shell: kubectl get pod netserver-0 -o custom-columns=IP:status.podIP --no-headers --kubeconfig /home/{{ ansible_user }}/config
   register: netserver_target
-
-- name: Pause for 30s to allow for grafana/tsdb stack to initialize
-  pause:
-    seconds: 30
 
 - name: Display the Netserver target address
   debug:
     msg: "NetServer target address is: {{ netserver_target.stdout }}"
-
-- name: Display the Netserver target address
-  command: echo "Grafana URL is at http://{{ inventory_hostname }}/"
-  register: GRAFANA_PUB_ADDRESS
-
-- name: Display the Grafana Public Web Address
-  debug:
-    msg: "Grafana is running at http://{{ inventory_hostname }}"

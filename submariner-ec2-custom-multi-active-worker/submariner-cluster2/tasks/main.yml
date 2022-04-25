@@ -60,7 +60,7 @@
     --cable-driver {{ submariner_cable_driver }} \
     --nattport 4500 \
     --natt=false \
-    --clustercidr={{ submariner_cluster_cidr }} \
+    --clustercidr={{ submariner_cluster_cidr_cluster2 }} \
     --multi-active-gateway=true \
     --image-override=submariner-operator={{ submariner_image_override }}/submariner-operator:devel \
     --image-override=submariner-globalnet={{ submariner_image_override }}/submariner-globalnet:devel \

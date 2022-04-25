@@ -22,7 +22,7 @@
     seconds: 20
 
 - name: Install k3s on the performance collector cluster node
-  shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --no-deploy traefik" sh
+  shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --service-cidr {{ submariner_service_cidr_cluster2 }} --cluster-cidr {{ submariner_cluster_cidr_cluster2 }} " sh
   ignore_errors: True
 
 

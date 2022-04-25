@@ -17,9 +17,9 @@
 - name: Set the new hostname
   command: sudo hostnamectl set-hostname {{ hostname }}
 
-- name: Pause for 20s to allow for the hostname change to stabalize
+- name: Pause for 10s to allow for the hostname change to stabalize
   pause:
-    seconds: 20
+    seconds: 10
 
 - name: Display the k8s join token on the worker node
   debug:
@@ -44,7 +44,6 @@
     K8S_TOKEN: "{{ hostvars[groups['brokerNode'][0]]['k8s_token'] }}"
     K8S_MASTER: "{{ k8s_master }}"
   shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ K8S_MASTER }}:6443 K3S_TOKEN={{ K8S_TOKEN }} sh -
-#  shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ K8S_MASTER }}:6443 K3S_TOKEN={{ K8S_TOKEN }} INSTALL_K3S_EXEC="server --no-deploy traefik" sh -
   ignore_errors: True
 
 - name: Pause for 20 seconds to finishing joining the k8s cluster

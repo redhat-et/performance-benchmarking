@@ -29,6 +29,7 @@
     {
       "aliasColors": {
         "bandwidth.netperf.cluster1-worker4-node": "semi-dark-green",
+        "sumSeries(bandwidth.active_gw.netperf.*)": "blue",
         "sumSeries(bandwidth.netperf.*)": "light-red"
       },
       "bars": false,
@@ -46,7 +47,7 @@
       "fillGradient": 0,
       "grid": {},
       "gridPos": {
-        "h": 7,
+        "h": 10,
         "w": 24,
         "x": 0,
         "y": 0
@@ -81,14 +82,18 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "P66A2574FF36FD84D"
+          },
           "refCount": 0,
           "refId": "A",
-          "target": "sumSeries(bandwidth.netperf.*)"
+          "target": "sumSeries(bandwidth.active_gw.netperf.*)"
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "Aggregate Node Bandwidth",
+      "title": "All Node Aggregate Active-Active Bandwidth",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -148,7 +153,7 @@
         "h": 3,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 10
       },
       "id": 10,
       "links": [],
@@ -170,8 +175,12 @@
       "pluginVersion": "8.4.3",
       "targets": [
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "P66A2574FF36FD84D"
+          },
           "refId": "A",
-          "target": "sumSeries(bandwidth.netperf.*)"
+          "target": "sumSeries(bandwidth.active_gw.netperf.*)"
         }
       ],
       "title": "Current Aggregated Bandwidth",
@@ -179,105 +188,7 @@
     },
     {
       "aliasColors": {
-        "cluster1-worker1-node": "semi-dark-blue",
-        "cluster1-worker2-node": "semi-dark-purple",
-        "cluster1-worker3-node": "dark-orange",
-        "cluster1-worker4-node": "semi-dark-green",
-        "digitalocean": "#6ED0E0",
-        "openstack": "#64B0C8",
-        "softlayer": "#E0F9D7",
-        "virtualbox": "#AEA2E0",
-        "vmwarevcloudair": "#F9D9F9",
-        "vmwarevsphere": "#E5A8E2"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 0,
-      "grid": {},
-      "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 10
-      },
-      "hiddenSeries": false,
-      "id": 22,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "hideEmpty": true,
-        "max": true,
-        "min": true,
-        "rightSide": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 2,
-      "links": [],
-      "nullPointMode": "connected",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.4.3",
-      "pointradius": 3,
-      "points": true,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "refCount": 0,
-          "refId": "A",
-          "target": "aliasByMetric(bandwidth.netperf.*)",
-          "textEditor": false
-        }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "All Nodes NetPerf Bandwidth",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "cumulative"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "bps",
-          "show": true
-        },
-        {
-          "format": "short",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
-      "aliasColors": {
+        "bandwidth.active_gw.netperf.cluster1-worker1-node": "purple",
         "bandwidth.netperf.cluster1-worker1-node": "blue"
       },
       "bars": false,
@@ -298,7 +209,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 13
       },
       "hiddenSeries": false,
       "id": 9,
@@ -330,10 +241,14 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "P66A2574FF36FD84D"
+          },
           "hide": false,
           "refCount": 0,
           "refId": "A",
-          "target": "bandwidth.netperf.cluster1-worker1-node",
+          "target": "bandwidth.active_gw.netperf.cluster1-worker1-node",
           "textEditor": false
         }
       ],
@@ -367,6 +282,7 @@
     },
     {
       "aliasColors": {
+        "bandwidth.active_gw.netperf.cluster1-worker2-node": "yellow",
         "bandwidth.netperf.cluster1-worker2-node": "semi-dark-purple"
       },
       "bars": false,
@@ -387,8 +303,9 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 20
       },
+      "hiddenSeries": false,
       "id": 1,
       "legend": {
         "alignAsTable": true,
@@ -405,6 +322,9 @@
       "linewidth": 3,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.3",
       "pointradius": 4,
@@ -416,9 +336,13 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "P66A2574FF36FD84D"
+          },
           "refCount": 0,
           "refId": "B",
-          "target": "bandwidth.netperf.cluster1-worker2-node"
+          "target": "bandwidth.active_gw.netperf.cluster1-worker2-node"
         }
       ],
       "thresholds": [],
@@ -451,6 +375,7 @@
     },
     {
       "aliasColors": {
+        "bandwidth.active_gw.netperf.cluster1-worker3-node": "orange",
         "bandwidth.netperf.cluster1-worker2-node": "semi-dark-orange",
         "bandwidth.netperf.cluster1-worker3-node": "dark-orange"
       },
@@ -472,8 +397,9 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 27
       },
+      "hiddenSeries": false,
       "id": 3,
       "legend": {
         "alignAsTable": true,
@@ -490,6 +416,9 @@
       "linewidth": 3,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.3",
       "pointradius": 4,
@@ -501,97 +430,18 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "P66A2574FF36FD84D"
+          },
           "refCount": 0,
           "refId": "A",
-          "target": "bandwidth.netperf.cluster1-worker3-node"
+          "target": "bandwidth.active_gw.netperf.cluster1-worker3-node"
         }
       ],
       "thresholds": [],
       "timeRegions": [],
       "title": "cluster1-worker3-node Bandwidth",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "cumulative"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "bits",
-          "show": true
-        },
-        {
-          "format": "short",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
-      "aliasColors": {
-        "bandwidth.netperf.cluster1-worker4-node": "semi-dark-green"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 2,
-      "fillGradient": 0,
-      "grid": {},
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 41
-      },
-      "id": 5,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "max": true,
-        "min": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 3,
-      "links": [],
-      "nullPointMode": "connected",
-      "percentage": false,
-      "pluginVersion": "8.4.3",
-      "pointradius": 4,
-      "points": true,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "refCount": 0,
-          "refId": "A",
-          "target": "bandwidth.netperf.cluster1-worker4-node"
-        }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "cluster1-worker4-node Bandwidth",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -626,7 +476,7 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -661,8 +511,8 @@
     "type": "timepicker"
   },
   "timezone": "browser",
-  "title": "Bandwidth Aggregate Netperf Dashboard",
+  "title": "Submariner Multi-Active Gateway Aggregate Netperf Dashboard",
   "uid": "r4KWOkE7r",
-  "version": 2,
+  "version": 6,
   "weekStart": ""
 }
