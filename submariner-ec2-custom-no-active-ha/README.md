@@ -10,7 +10,7 @@
 - The specific topology looks like the following. The number of worker nodes running conn current performance tests is set in the `vars.yml` file `node_count`.
 
 <p align="center">
-<img src="single-gateway-submariner.png" alt="drawing" width="80%"/>
+<img src="single-gateway-submariner.png" alt="drawing" width="70%"/>
 </p>
 
 ### Quickstart for multi-cluster, single gateway, multi-worker
@@ -60,12 +60,14 @@ Copy the json in [grafana-dashboard.json](./grafana-dashboard.json) and paste it
 
 ![](https://github.com/nerdalert/cloud-bandwidth/raw/master/docs/images/grafana-import-sm.png)
 
-- Debug netperf and tsdb exports by looking at the cloud bandwidth logs like so:
+
+- Debug netperf and tsdb exports by looking at the cloud bandwidth logs by SSHing to the `cluster1brokerNode` (ex. `ssh -i ./axon-perf-testing.pem fedora@x.x.x.x`) in the `ip.txt` file like so:
 
 ```shell
 export KUBECONFIG=/home/fedora/config
 kubectl logs cloud-bandwidth-netperf-ds-n96zp -n kube-system
-```
+``` 
+
 
 ### Verbose Setup
 
@@ -180,10 +182,10 @@ worker nodes to any of the clusters.
 You can find the addresses for the installed nodes in `ip.txt`, for example:
 
 ```yaml
-[brokerNode]
+[cluster1brokerNode]
   34.239.124.181 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster1-ha1-fed
 
-[cluster2PerfCollectorNode]
+[cluster2Master]
   3.95.5.149 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster2-perf-target-fed
 
 [cluster1WorkerNodes]
@@ -193,7 +195,7 @@ You can find the addresses for the installed nodes in `ip.txt`, for example:
   44.202.134.79 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster1-worker2-fed
   54.211.58.60 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster1-worker1-fed
 
-[cluster2WorkerNode]
+[cluster2Worker1Node]
   3.82.150.153 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.10 hostname=cluster2-worker1-fed
 ...
 

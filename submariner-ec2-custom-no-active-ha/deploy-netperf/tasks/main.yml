@@ -2,11 +2,11 @@
 # tasks file for deploy-netperf
 - name: Import variables from perfCollectorNode
   set_fact:
-    NETSERVER_ADDRESS: "{{ hostvars[groups['cluster2WorkerNode'][0]]['netserver_target'].stdout }}"
+    NETSERVER_ADDRESS: "{{ hostvars[groups['cluster2Worker1Node'][0]]['netserver_target'].stdout }}"
 
 - name: Import TSDB Target from cluster2-worker if not defined in vars.yml
   set_fact:
-    GRAFANA_ADDRESS: "{{ hostvars[groups['cluster2WorkerNode'][0]]['worker2_node_ip'].stdout }}"
+    GRAFANA_ADDRESS: "{{ hostvars[groups['cluster2Worker1Node'][0]]['worker2_node_ip'].stdout }}"
   when: external_grafana_collector | default('', true) | trim == ''
 
 - name: Set the TSDB Target if it is defined in vars.yml

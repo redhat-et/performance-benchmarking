@@ -1,23 +1,23 @@
 # roles get branched from here
-- hosts: brokerNode
+- hosts: cluster1brokerNode
   vars_files:
     - vars.yml
   roles:
     - role: k8s-broker-cluster1
 
-- hosts: cluster2PerfCollectorNode
+- hosts: cluster2Master
   vars_files:
     - vars.yml
   roles:
     - role: k8s-cluster2-perf-collector-master
 
-- hosts: brokerNode
+- hosts: cluster1brokerNode
   vars_files:
     - vars.yml
   roles:
     - role: submariner-cluster1-broker
 
-- hosts: cluster2PerfCollectorNode
+- hosts: cluster2Master
   vars_files:
     - vars.yml
   roles:
@@ -29,29 +29,46 @@
   roles:
     - role: k8s-cluster1-worker
 
-- hosts: cluster2WorkerNode
+- hosts: cluster2Worker1Node
   vars_files:
     - vars.yml
   roles:
-    - role: k8s-cluster2-worker
+    - role: k8s-cluster2-worker1
+
+- hosts: cluster2Worker2Node
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-cluster2-worker2
 
 ## Skip role if an external TSDB collector is defined in vars.yml
-- hosts: cluster2WorkerNode
+- hosts: cluster2Worker1Node
   vars_files:
     - vars.yml
   roles:
     - role: deploy-grafana
       when: external_grafana_collector | default('', true) | trim == ''
 
-- hosts: cluster2WorkerNode
+- hosts: cluster2Worker1Node
   vars_files:
     - vars.yml
   roles:
-    - role: deploy-netserver
+    - role: deploy-netserver-group1
 
-- hosts: brokerNode
+- hosts: cluster2Worker2Node
   vars_files:
     - vars.yml
   roles:
-    - role: deploy-netperf
+    - role: deploy-netserver-group2
 
+- hosts: cluster1brokerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-netperf-group1
+
+- hosts: cluster1brokerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-netperf-group2

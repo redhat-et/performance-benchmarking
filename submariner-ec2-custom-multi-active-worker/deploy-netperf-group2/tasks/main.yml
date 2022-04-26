@@ -1,0 +1,95 @@
+---
+# tasks file for deploy-netperf-group2
+- name: Import variables from perfCollectorNode
+  set_fact:
+    NETSERVER_ADDRESS_GROUP2: "{{ hostvars[groups['cluster2Worker2Node'][0]]['netserver_target_group2'].stdout }}"
+
+- name: Import TSDB Target from cluster2-worker if not defined in vars.yml
+  set_fact:
+    GRAFANA_ADDRESS: "{{ hostvars[groups['cluster2Worker1Node'][0]]['worker1_node_ip'].stdout }}"
+  when: external_grafana_collector | default('', true) | trim == ''
+
+- name: Set the TSDB Target if it is defined in vars.yml
+  set_fact:
+    GRAFANA_ADDRESS: "{{ external_grafana_collector }}"
+  when: external_grafana_collector | default('', true) | trim != ''
+
+- name: Verify kubectl cmd
+  command: kubectl get pods --all-namespaces --kubeconfig /home/{{ ansible_user }}/config
+
+- name: Command which outputs multiple lines
+  shell: kubectl get nodes --kubeconfig /home/{{ ansible_user }}/config | grep worker |  awk "{print \$1}"
+  register: worker_nodes
+
+- name: Label Worker Nodes for the NetPerf Daemonset
+  shell: kubectl label nodes {{ item }} netperf=true --overwrite --kubeconfig /home/{{ ansible_user }}/config
+  with_items: "{{ worker_nodes.stdout_lines }}"
+
+- name: Create the NetServer DaemonSet File
+  shell: |
+    cat <<EOF > /home/{{ ansible_user }}/cloud-bandwidth-netperf-group2-ds.yaml
+    apiVersion: apps/v1
+    kind: DaemonSet
+    metadata:
+      name: cloud-bandwidth-netperf-group2-ds
+      namespace: kube-system
+    spec:
+      selector:
+        matchLabels:
+          name: netperf-client
+          netperf: "true"
+      template:
+        metadata:
+          labels:
+            name: netperf-client
+            netperf: "true"
+        spec:
+          nodeSelector:
+            netperf: "true"
+          containers:
+            - name: cloud-bandwidth-netperf
+              image: quay.io/networkstatic/cloud-bandwidth
+              env:
+                - name: CBANDWIDTH_PERF_SERVERS
+                  value: "{{ NETSERVER_ADDRESS_GROUP2 }}"
+                - name: CBANDWIDTH_PERF_SERVER_PORT
+                  value: "12865"
+                - name: CBANDWIDTH_POLL_INTERVAL
+                  value: "120"
+                - name: CBANDWIDTH_POLL_LENGTH
+                  value: "45"
+                - name: CBANDWIDTH_DOWNLOAD_PREFIX
+                  value: {{ time_series_path_group2 }}
+                - name: CBANDWIDTH_GRAFANA_ADDRESS
+                  value: "{{ GRAFANA_ADDRESS }}"
+                - name: CBANDWIDTH_GRAFANA_PORT
+                  value: "2003"
+                - name: NODE_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: spec.nodeName
+              securityContext:
+                allowPrivilegeEscalation: true
+                privileged: true
+              command: ["/bin/sh","-c"]
+              args:
+              - |
+                while true; do
+                  ./cloud-bandwidth -perf-servers \$CBANDWIDTH_PERF_SERVERS:\$NODE_NAME \\
+                    -perf-server-port \$CBANDWIDTH_PERF_SERVER_PORT \\
+                    -test-interval \$CBANDWIDTH_POLL_INTERVAL \\
+                    -test-length \$CBANDWIDTH_POLL_LENGTH \\
+                    -tsdb-download-prefix \$CBANDWIDTH_DOWNLOAD_PREFIX \\
+                    -grafana-address \$CBANDWIDTH_GRAFANA_ADDRESS \\
+                    -grafana-port \$CBANDWIDTH_GRAFANA_PORT \\
+                    -netperf \\
+                    -nocontainer \\
+                    -debug;
+                done
+          terminationGracePeriodSeconds: 60
+    EOF
+
+- name: Starting both Netperf group daemonsets
+  shell: |
+    kubectl apply -f /home/{{ ansible_user }}/cloud-bandwidth-netperf-group1-ds.yaml --kubeconfig /home/{{ ansible_user }}/config
+    kubectl apply -f /home/{{ ansible_user }}/cloud-bandwidth-netperf-group2-ds.yaml --kubeconfig /home/{{ ansible_user }}/config

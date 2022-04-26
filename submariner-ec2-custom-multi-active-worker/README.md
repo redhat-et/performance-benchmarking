@@ -1,6 +1,6 @@
 # Kubernetes/Submariner Custom Image Performance Testing Active/Active Gateway
 - **Note:** The active/active build is currently throwing an error thus the active/active deployment is commented out. Simply uncomment where it says in the playbooks to run active/active
-gateways once the issue is resolved, active/active will be the default for the playbooks in this directory once stable in this deployment.
+  gateways once the issue is resolved, active/active will be the default for the playbooks in this directory once stable in this deployment.
 - TLDR; specify the custom images repo and the custom subctl binary build in `vars.yml`
 - Until a bug is sorted it is running in non-active/active mode.
 - A daemonset for Cluster-1 worker nodes is provisioned for polling of the exported netserver StatefulSettefulset running in Cluster-2 and exported via Submariner in Globalnet. This is all automated.
@@ -61,12 +61,12 @@ Copy the json in [grafana-dashboard.json](./grafana-dashboard.json) and paste it
 
 ![](https://github.com/nerdalert/cloud-bandwidth/raw/master/docs/images/grafana-import-sm.png)
 
-- Debug netperf and tsdb exports by looking at the cloud bandwidth logs like so:
+- Debug netperf and tsdb exports by looking at the cloud bandwidth logs by SSHing to the `cluster1brokerNode` (ex. `ssh -i ./axon-perf-testing.pem fedora@x.x.x.x`) in the `ip.txt` file like so:
 
 ```shell
 export KUBECONFIG=/home/fedora/config
 kubectl logs cloud-bandwidth-netperf-ds-n96zp -n kube-system
-```
+``` 
 
 ### Verbose Setup
 
@@ -91,22 +91,22 @@ secret_key: <add_secret_key_here>
 
 ```yaml
 [defaults]
-# this is an default inventory location, user can change it accordingly
-host_key_checking = false
-deprecation_warnings = false
-ask_pass = false
-stdout_callback = yaml
-remote_user = fedora
-# defaults to the base directory in the project
-inventory = ip.txt
-# create .pem private_key_file and provide location
-private_key_file = <aws_private_key_name>.pem
+        # this is an default inventory location, user can change it accordingly
+  host_key_checking = false
+  deprecation_warnings = false
+  ask_pass = false
+  stdout_callback = yaml
+  remote_user = fedora
+        # defaults to the base directory in the project
+  inventory = ip.txt
+        # create .pem private_key_file and provide location
+  private_key_file = <aws_private_key_name>.pem
 
-[privilege_escalation]
-become = true
-become_method = sudo
-become_user = root
-become_ask_pass = true
+        [privilege_escalation]
+  become = true
+  become_method = sudo
+  become_user = root
+  become_ask_pass = true
 ```
 
 - Next set the environmentals for your AWS EC2 details in `env.yaml` located in the base
@@ -167,30 +167,30 @@ ansible-playbook setup-k8s.yml
 
 Assuming that runs with no issues, your k8s/submariner deployment is up and running.
 - The `broker-info.subm` file used with all joins is copied to the local machine  
-from the initial broker node installation and then copied to all cluster nodes for 
-their join.
+  from the initial broker node installation and then copied to all cluster nodes for
+  their join.
 - The kube server join token is copied to the local directory if you want to attach
-worker nodes to any of the clusters.
+  worker nodes to any of the clusters.
 
 ### Verify the Kubernetes/Submariner Deployment
 
 You can find the addresses for the installed nodes in `ip.txt`, for example:
 
 ```yaml
-[brokerNode]
+[cluster1brokerNode]
   34.239.124.181 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster1-ha1-fed
 
-[cluster2PerfCollectorNode]
+        [cluster2Master]
   3.95.5.149 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster2-perf-target-fed
 
-[cluster1WorkerNodes]
+        [cluster1WorkerNodes]
   34.239.127.237 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster1-worker5-fed
   44.203.194.156 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster1-worker4-fed
   44.203.127.134 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster1-worker3-fed
   44.202.134.79 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster1-worker2-fed
   54.211.58.60 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.15 hostname=cluster1-worker1-fed
 
-[cluster2WorkerNode]
+        [cluster2Worker1Node]
   3.82.150.153 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.10 hostname=cluster2-worker1-fed
 ...
 

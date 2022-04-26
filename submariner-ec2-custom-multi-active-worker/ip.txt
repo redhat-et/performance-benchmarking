@@ -1,11 +1,14 @@
-[brokerNode]
+[cluster1brokerNode]
 
-[secondaryGatewayNode]
+[cluster1secondaryGatewayNode]
 
-[cluster2PerfCollectorNode]
+[cluster2Master]
 
 [cluster2SecondaryGatewayNode]
 
 [cluster1WorkerNodes]
 
-[cluster2WorkerNode]
+[cluster2Worker1Node]
+
+[cluster2Worker2Node]
+

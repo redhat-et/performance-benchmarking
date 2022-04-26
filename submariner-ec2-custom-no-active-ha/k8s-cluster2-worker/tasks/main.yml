@@ -24,7 +24,7 @@
 
 - name: Display the k8s join token on the worker node
   debug:
-    msg: "{{ hostvars[groups['cluster2PerfCollectorNode'][0]]['k8s_token'] }}"
+    msg: "{{ hostvars[groups['cluster2Master'][0]]['k8s_token'] }}"
 
 - name: Display the k8s master IP address on the worker node used to join
   debug:
@@ -32,7 +32,7 @@
 
 - name: Install k3s on worker nodes
   vars:
-    K8S_TOKEN: "{{ hostvars[groups['cluster2PerfCollectorNode'][0]]['k8s_token'] }}"
+    K8S_TOKEN: "{{ hostvars[groups['cluster2Master'][0]]['k8s_token'] }}"
     K8S_MASTER: "{{ k8s_master }}"
   shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ K8S_MASTER }}:6443 K3S_TOKEN={{ K8S_TOKEN }} sh -
 #  async: 300

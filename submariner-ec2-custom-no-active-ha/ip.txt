@@ -1,7 +1,10 @@
-[brokerNode]
+[cluster1brokerNode]
 
-[cluster2PerfCollectorNode]
+[cluster2Master]
 
 [cluster1WorkerNodes]
 
-[cluster2WorkerNode]
+[cluster2Worker1Node]
+
+[cluster2Worker2Node]
+

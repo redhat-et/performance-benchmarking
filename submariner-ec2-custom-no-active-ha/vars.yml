@@ -10,7 +10,8 @@ secgroup_name: PerfTesting             # the security group name can be an exist
 security_group_description: "Perf Testing for VPC perf-testing-vpc / vpc-0566e09aa71f553c1"
 inventory_location: ip.txt             # leaving this as is will use the ip.txt file in the base directory
 external_grafana_collector: 10.10.0.76 # external graphite tsdb/grafana instance rather than the playbooks provisioning one for persistant records
-time_series_path: submariner.single_gw.vxlan.netperf # the time series metric for where to store the TSD plot
+time_series_path_group1: submariner.single_gw.vxlan.netperf.group1 # the time series metric for where to store the TSD plot
+time_series_path_group2: submariner.single_gw.vxlan.netperf.group2 # the time series metric for where to store the TSD plot
 submariner_cable_driver: vxlan         # [vxlan, libreswan, wireguard]
 submariner_cluster_cidr_cluster1: 10.70.0.0/16
 submariner_service_cidr_cluster1: 10.75.0.0/16

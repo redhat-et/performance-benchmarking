@@ -1,0 +1,85 @@
+---
+# tasks file for deploy-netserver-group2
+
+- name: Ensure the submariner-gateway pod is in ready state
+  shell: kubectl wait --for=condition=ready pod -l app=submariner-gateway --timeout=120s -n submariner-operator --kubeconfig /home/{{ ansible_user }}/config
+
+- name: Install Submariner
+  shell: |
+    curl -Ls https://get.submariner.io/ > /home/{{ ansible_user }}/install-sub
+    chmod +x /home/{{ ansible_user }}/install-sub
+    /home/{{ ansible_user }}/install-sub
+    sudo cp /root/.local/bin/subctl /usr/local/bin/subctl
+
+- name: Label a worker2 node in cluster-2 for the Netserver StatefulSet
+  shell: kubectl label nodes {{ hostname }} netserver-group2=true --overwrite --kubeconfig /home/{{ ansible_user }}/config
+
+- name: Create the Netserver StatefulSet and service listening on TCP/12865
+  shell: |
+    cat <<EOF > /home/{{ ansible_user }}/netserver-group2-ss.yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: netserver-group2
+      labels:
+        app.kubernetes.io/instance: netserver-group2
+        app.kubernetes.io/name: netserver-group2
+    spec:
+      ports:
+      - port: 12865
+        name: netserver
+      clusterIP: None
+      selector:
+        app.kubernetes.io/instance: netserver-group2
+        app.kubernetes.io/name: netserver-group2
+    ---
+    apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      name: netserver-group2
+    spec:
+      serviceName: "netserver-group2"
+      replicas: 1
+      selector:
+        matchLabels:
+            app.kubernetes.io/instance: netserver-group2
+            app.kubernetes.io/name: netserver-group2
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/instance: netserver-group2
+            app.kubernetes.io/name: netserver-group2
+        spec:
+          nodeSelector:
+            netserver-group2: "true"
+          containers:
+          - name: netserver-group2
+            image: quay.io/networkstatic/netserver
+            args: ["-D"]
+            ports:
+            - containerPort: 12865
+              name: netserver
+    EOF
+
+- name: Starting the Netperf daemonset
+  command: kubectl apply -f /home/{{ ansible_user }}/netserver-group2-ss.yaml --kubeconfig /home/{{ ansible_user }}/config
+
+- name: Pause for 10s to allow for stabilization
+  pause:
+    seconds: 10
+
+- name: Export group2 Netserver StatefulSet with Submariner
+  become_user: "{{ ansible_user }}"
+  shell: subctl --kubeconfig /home/{{ ansible_user }}/config export service -n default netserver-group2
+
+- name: Pause for 5s for convergence
+  pause:
+    seconds: 5
+
+- name: Register the exported Netserver address
+  shell: kubectl get pod netserver-group2-0 -o custom-columns=IP:status.podIP --no-headers --kubeconfig /home/{{ ansible_user }}/config
+  register: netserver_target_group2
+
+- name: Display group2 Netserver target address
+  debug:
+    msg: "NetServer group2 target address is: {{ netserver_target_group2.stdout }}"
