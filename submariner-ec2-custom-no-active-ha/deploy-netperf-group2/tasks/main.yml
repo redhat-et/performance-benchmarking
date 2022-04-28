@@ -59,7 +59,7 @@
                 - name: CBANDWIDTH_POLL_LENGTH
                   value: "45"
                 - name: CBANDWIDTH_DOWNLOAD_PREFIX
-                  value: {{ time_series_path_group2 }}
+                  value: {{ time_series_netperf_path_group2 }}
                 - name: CBANDWIDTH_GRAFANA_ADDRESS
                   value: "{{ GRAFANA_ADDRESS }}"
                 - name: CBANDWIDTH_GRAFANA_PORT

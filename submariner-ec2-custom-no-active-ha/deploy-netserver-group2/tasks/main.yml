@@ -61,7 +61,7 @@
               name: netserver
     EOF
 
-- name: Starting the Netperf daemonset
+- name: Starting the Netperf StatefulSet
   command: kubectl apply -f /home/{{ ansible_user }}/netserver-group2-ss.yaml --kubeconfig /home/{{ ansible_user }}/config
 
 - name: Pause for 10s to allow for stabilization

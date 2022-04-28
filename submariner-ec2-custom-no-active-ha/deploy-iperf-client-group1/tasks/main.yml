@@ -1,0 +1,91 @@
+---
+# tasks file for deploy-iperf-client-group1
+- name: Import variables from perfCollectorNode
+  set_fact:
+    IPERF_ADDRESS_GROUP1: "{{ hostvars[groups['cluster2Worker1Node'][0]]['iperf_target_group1'].stdout }}"
+
+- name: Import TSDB Target from cluster2-worker if not defined in vars.yml
+  set_fact:
+    GRAFANA_ADDRESS: "{{ hostvars[groups['cluster2Worker1Node'][0]]['worker1_node_ip'].stdout }}"
+  when: external_grafana_collector | default('', true) | trim == ''
+
+- name: Set the TSDB Target if it is defined in vars.yml
+  set_fact:
+    GRAFANA_ADDRESS: "{{ external_grafana_collector }}"
+  when: external_grafana_collector | default('', true) | trim != ''
+
+- name: Verify kubectl cmd
+  command: kubectl get pods --all-namespaces --kubeconfig /home/{{ ansible_user }}/config
+
+- name: Parse worker-1 from cluster-1 node name
+  shell: kubectl get nodes --kubeconfig /home/{{ ansible_user }}/config | grep worker1 |  awk "{print \$1}"
+  register: worker_node
+
+- name: Label the First Worker Node for the Iperf Group-1 Daemonset
+  shell: kubectl label nodes {{ worker_node.stdout }} iperf-group1=true --overwrite --kubeconfig /home/{{ ansible_user }}/config
+
+- name: Create the Iperf DaemonSet File
+  shell: |
+    cat <<EOF > /home/{{ ansible_user }}/cloud-bandwidth-iperf-group1-ds.yaml
+    apiVersion: apps/v1
+    kind: DaemonSet
+    metadata:
+      name: cloud-bandwidth-iperf-group1-ds
+      namespace: kube-system
+    spec:
+      selector:
+        matchLabels:
+          name: iperf-client
+          iperf: "true"
+      template:
+        metadata:
+          labels:
+            name: iperf-client
+            iperf: "true"
+        spec:
+          nodeSelector:
+            iperf-group1: "true"
+          containers:
+            - name: cloud-bandwidth-iperf
+              image: quay.io/networkstatic/cloud-bandwidth
+              env:
+                - name: CBANDWIDTH_PERF_SERVERS
+                  value: "{{ IPERF_ADDRESS_GROUP1 }}"
+                - name: CBANDWIDTH_PERF_SERVER_PORT
+                  value: "5201"
+                - name: CBANDWIDTH_POLL_INTERVAL
+                  value: "120"
+                - name: CBANDWIDTH_POLL_LENGTH
+                  value: "45"
+                - name: CBANDWIDTH_DOWNLOAD_PREFIX
+                  value: {{ time_series_path_iperf_download_group1 }}
+                - name: CBANDWIDTH_UPLOAD_PREFIX
+                  value: {{ time_series_iperf_path_group1 }}
+                - name: CBANDWIDTH_GRAFANA_ADDRESS
+                  value: "{{ GRAFANA_ADDRESS }}"
+                - name: CBANDWIDTH_GRAFANA_PORT
+                  value: "2003"
+                - name: NODE_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: spec.nodeName
+              securityContext:
+                allowPrivilegeEscalation: true
+                privileged: true
+              command: ["/bin/sh","-c"]
+              args:
+              - |
+                while true; do
+                  ./cloud-bandwidth -perf-servers \$CBANDWIDTH_PERF_SERVERS:\$NODE_NAME \\
+                    -perf-server-port \$CBANDWIDTH_PERF_SERVER_PORT \\
+                    -test-interval \$CBANDWIDTH_POLL_INTERVAL \\
+                    -test-length \$CBANDWIDTH_POLL_LENGTH \\
+                    -tsdb-download-prefix \$CBANDWIDTH_DOWNLOAD_PREFIX \\
+                    -tsdb-upload-prefix \$CBANDWIDTH_UPLOAD_PREFIX \\
+                    -grafana-address \$CBANDWIDTH_GRAFANA_ADDRESS \\
+                    -grafana-port \$CBANDWIDTH_GRAFANA_PORT \\
+                    -nocontainer \\
+                    -debug;
+                done
+          terminationGracePeriodSeconds: 60
+    EOF

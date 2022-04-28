@@ -1,17 +1,31 @@
+# EC2 options
 aws_region: us-east-1                  # AWS region
 vpc_id: vpc-0566e09aa71f553c1          # VPC id from your aws account
 aws_subnet: subnet-0f8a1403fde2af94e   # VPC subnet id from your aws account
 aws_image_id: ami-08b4ee602f76bff79    # Fedora 35 (this can be changed to most any Linux distro)
 aws_key_name: axon-perf-testing        # the key pair on your aws account to use
 aws_instance_type: t2.large            # t2.micro is free tier eligable, but you can use any type to scale up, more examples [t2.large, t2.xlarge, t2.2xlarge]
-ansible_user: fedora                   # this is the default user ID for your AMI image. Example, AWS AMI is ec2-user etc
-node_count: 3                          # the number of cluster nodes you want to deploy
+node_count: 2                          # the number of cluster nodes you want to deploy
 secgroup_name: PerfTesting             # the security group name can be an existing group or else it will be created by the playbook
 security_group_description: "Perf Testing for VPC perf-testing-vpc / vpc-0566e09aa71f553c1"
+
+# Ansible Options
+ansible_user: fedora                   # this is the default user ID for your AMI image. Example, AWS AMI is ec2-user etc
 inventory_location: ip.txt             # leaving this as is will use the ip.txt file in the base directory
+
+# Network Metrics
+network_benchmark_tool: iperf
 external_grafana_collector: 10.10.0.76 # external graphite tsdb/grafana instance rather than the playbooks provisioning one for persistant records
-time_series_path_group1: submariner.single_gw.vxlan.netperf.group1 # the time series metric for where to store the TSD plot
-time_series_path_group2: submariner.single_gw.vxlan.netperf.group2 # the time series metric for where to store the TSD plot
+# Iperf Time Series
+time_series_path_iperf_download_group1: submariner.single_gw.vxlan.iperf3.download.group1 # Iperf3 only for unidirectional measurement
+time_series_path_iperf_download_group2: submariner.single_gw.vxlan.iperf3.download.group2 # Iperf3 only for unidirectional measurement
+time_series_iperf_path_group1: submariner.single_gw.vxlan.iperf3.upload.group1 # the time series metric for where to store the TSD plot
+time_series_iperf_path_group2: submariner.single_gw.vxlan.iperf3.upload.group2 # the time series metric for where to store the TSD plot
+# Netperf Time Series
+time_series_netperf_path_group1: submariner.single_gw.vxlan.netperf.group1 # the time series metric for where to store the TSD plot
+time_series_netperf_path_group2: submariner.single_gw.vxlan.netperf.group2 # the time series metric for where to store the TSD plot
+
+# Submariner Options
 submariner_cable_driver: vxlan         # [vxlan, libreswan, wireguard]
 submariner_cluster_cidr_cluster1: 10.70.0.0/16
 submariner_service_cidr_cluster1: 10.75.0.0/16

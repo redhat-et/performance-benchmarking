@@ -59,7 +59,7 @@
                 - name: CBANDWIDTH_POLL_LENGTH
                   value: "45"
                 - name: CBANDWIDTH_DOWNLOAD_PREFIX
-                  value: {{ time_series_path_group1 }}
+                  value: {{ time_series_netperf_path_group1 }}
                 - name: CBANDWIDTH_GRAFANA_ADDRESS
                   value: "{{ GRAFANA_ADDRESS }}"
                 - name: CBANDWIDTH_GRAFANA_PORT
@@ -88,11 +88,3 @@
                 done
           terminationGracePeriodSeconds: 60
     EOF
-
-#- name: Starting the Netperf daemonset
-#  command: kubectl apply -f /home/{{ ansible_user }}/cloud-bandwidth-netperf-ds.yaml --kubeconfig /home/{{ ansible_user }}/config
-
-
-#- name: Display the Grafana Public Web Address
-#  debug:
-#    msg: "Grafana is running at http://{{ GRAFANA_WEB }}"

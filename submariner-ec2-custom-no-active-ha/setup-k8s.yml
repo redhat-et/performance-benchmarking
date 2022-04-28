@@ -49,26 +49,67 @@
     - role: deploy-grafana
       when: external_grafana_collector | default('', true) | trim == ''
 
+# Netperf Deployments
 - hosts: cluster2Worker1Node
   vars_files:
     - vars.yml
   roles:
     - role: deploy-netserver-group1
+      when: network_benchmark_tool == "netperf"
 
 - hosts: cluster2Worker2Node
   vars_files:
     - vars.yml
   roles:
     - role: deploy-netserver-group2
+      when: network_benchmark_tool == "netperf"
 
 - hosts: cluster1brokerNode
   vars_files:
     - vars.yml
   roles:
     - role: deploy-netperf-group1
+      when: network_benchmark_tool == "netperf"
 
 - hosts: cluster1brokerNode
   vars_files:
     - vars.yml
   roles:
     - role: deploy-netperf-group2
+      when: network_benchmark_tool == "netperf"
+
+- hosts: cluster2Worker1Node
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-netserver-group1
+      when: network_benchmark_tool == "netperf"
+
+# Iperf Deployments
+- hosts: cluster2Worker1Node
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-iperf-svr-group1
+      when: network_benchmark_tool == "iperf"
+
+- hosts: cluster2Worker2Node
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-iperf-svr-group2
+      when: network_benchmark_tool == "iperf"
+
+- hosts: cluster1brokerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-iperf-client-group1
+      when: network_benchmark_tool == "iperf"
+
+- hosts: cluster1brokerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-iperf-client-group2
+      when: network_benchmark_tool == "iperf"
