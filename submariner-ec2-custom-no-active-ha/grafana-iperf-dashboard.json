@@ -22,7 +22,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 4,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -31,7 +31,8 @@
         "bandwidth.netperf.cluster1-worker4-node": "semi-dark-green",
         "sumSeries(bandwidth.active_gw.netperf.*)": "blue",
         "sumSeries(bandwidth.netperf.*)": "light-red",
-        "sumSeries(submariner.multi_gw.vxlan.netperf.*.*)": "blue"
+        "sumSeries(submariner.multi_gw.vxlan.netperf.*.*)": "blue",
+        "sumSeries(submariner.single_gw.vxlan.netperf.*.*)": "blue"
       },
       "bars": false,
       "dashLength": 10,
@@ -89,12 +90,12 @@
           },
           "refCount": 0,
           "refId": "A",
-          "target": "sumSeries(submariner.multi_gw.vxlan.netperf.*.*)"
+          "target": "sumSeries(submariner.single_gw.vxlan.netperf.*.*)"
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "All Node Aggregate Active-Active Bandwidth",
+      "title": "All Node Aggregate Single-Active GW Bandwidth",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -181,7 +182,7 @@
             "uid": "P66A2574FF36FD84D"
           },
           "refId": "A",
-          "target": "sumSeries(submariner.multi_gw.vxlan.netperf.*.*)"
+          "target": "sumSeries(submariner.single_gw.vxlan.netperf.*.*)"
         }
       ],
       "title": "Current Aggregated Bandwidth",
@@ -193,7 +194,10 @@
         "bandwidth.netperf.cluster1-worker1-node": "blue",
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker1-node": "yellow",
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker2-node": "blue",
-        "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker3-node": "purple"
+        "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker3-node": "purple",
+        "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker1-node": "yellow",
+        "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker2-node": "blue",
+        "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker3-node": "purple"
       },
       "bars": false,
       "dashLength": 10,
@@ -202,8 +206,7 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "links": [],
-          "unit": "Bps"
+          "links": []
         },
         "overrides": []
       },
@@ -253,7 +256,7 @@
           "hide": false,
           "refCount": 0,
           "refId": "A",
-          "target": "submariner.multi_gw.vxlan.netperf.group1.*",
+          "target": "submariner.single_gw.vxlan.netperf.group1.*",
           "textEditor": false
         }
       ],
@@ -273,7 +276,7 @@
       },
       "yaxes": [
         {
-          "format": "Bps",
+          "format": "bps",
           "show": true
         },
         {
@@ -294,7 +297,10 @@
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker3-node": "purple",
         "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker1-node": "yellow",
         "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker2-node": "blue",
-        "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker3-node": "purple"
+        "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker3-node": "purple",
+        "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker1-node": "yellow",
+        "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker2-node": "blue",
+        "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker3-node": "purple"
       },
       "bars": false,
       "dashLength": 10,
@@ -303,8 +309,7 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "links": [],
-          "unit": "bps"
+          "links": []
         },
         "overrides": []
       },
@@ -354,7 +359,7 @@
           "hide": false,
           "refCount": 0,
           "refId": "A",
-          "target": "submariner.multi_gw.vxlan.netperf.group2.*",
+          "target": "submariner.single_gw.vxlan.netperf.group2.*",
           "textEditor": false
         }
       ],
@@ -430,8 +435,8 @@
     "type": "timepicker"
   },
   "timezone": "browser",
-  "title": "Submariner Multi-Active Gateway Aggregate Netperf Dashboard",
-  "uid": "r4KWOkE7r",
-  "version": 11,
+  "title": "Submariner Single-Active Gateway Iperf Dashboard",
+  "uid": "r4KWOkR7e",
+  "version": 5,
   "weekStart": ""
 }

@@ -23,7 +23,7 @@
     # Broker and Gateway Node Setup
     - name: Launching Submariner Broker Node
       amazon.aws.ec2_instance:
-         name: "cluster1-iperf-noha1-node"
+         name: "cluster1-{{ network_benchmark_tool }}-noha1-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -50,12 +50,12 @@
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "cluster1brokerNode"
-         line: "[cluster1brokerNode]\n{{ brokerIp['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-iperf-noha1-node\n"
+         line: "[cluster1brokerNode]\n{{ brokerIp['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-{{ network_benchmark_tool }}-noha1-node\n"
 
 #    # Perf Collector Node Setup and Cluster-2 K8s Master
     - name: Launching Cluster-2 K8s Master Performance Collector Node
       amazon.aws.ec2_instance:
-         name: "cluster2-iperf-noha1-perf-target-node"
+         name: "cluster2-{{ network_benchmark_tool }}-noha1-perf-target-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -76,12 +76,12 @@
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "cluster2Master"
-         line: "[cluster2Master]\n{{ cluster2MasterIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} subctl_broker={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster2-iperf-noha1-perf-target-node\n"
+         line: "[cluster2Master]\n{{ cluster2MasterIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} subctl_broker={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster2-{{ network_benchmark_tool }}-noha1-perf-target-node\n"
 
     # Cluster-1 Worker Node(s) Setup
     - name: Launching Cluster-1 Worker Nodes
       amazon.aws.ec2_instance:
-         name: "cluster1-iperf-noha-worker{{ item+1 }}-node"
+         name: "cluster1-{{ network_benchmark_tool }}-noha-worker{{ item+1 }}-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -109,7 +109,7 @@
     # Cluster-2 Worker-1 Node Setup (single node for netserver target)
     - name: Launching Cluster-2 Worker-1 Node
       amazon.aws.ec2_instance:
-         name: "cluster2-iperf-noha-worker1-node"
+         name: "cluster2-{{ network_benchmark_tool }}-noha-worker1-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -137,7 +137,7 @@
     # Cluster-2 Worker-2 Node Setup (single node for netserver target)
     - name: Launching Cluster-2 Worker-2 Node
       amazon.aws.ec2_instance:
-         name: "cluster2-iperf-noha-worker2-node"
+         name: "cluster2-{{ network_benchmark_tool }}-noha-worker2-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"

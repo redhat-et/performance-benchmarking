@@ -14,13 +14,15 @@ ansible_user: fedora                   # this is the default user ID for your AM
 inventory_location: ip.txt             # leaving this as is will use the ip.txt file in the base directory
 
 # Network Metrics
-network_benchmark_tool: iperf
+network_benchmark_tool: iperf          # [netperf, iperf]
 external_grafana_collector: 10.10.0.76 # external graphite tsdb/grafana instance rather than the playbooks provisioning one for persistant records
+
 # Iperf Time Series
-time_series_path_iperf_download_group1: submariner.single_gw.vxlan.iperf3.download.group1 # Iperf3 only for unidirectional measurement
-time_series_path_iperf_download_group2: submariner.single_gw.vxlan.iperf3.download.group2 # Iperf3 only for unidirectional measurement
-time_series_iperf_path_group1: submariner.single_gw.vxlan.iperf3.upload.group1 # the time series metric for where to store the TSD plot
-time_series_iperf_path_group2: submariner.single_gw.vxlan.iperf3.upload.group2 # the time series metric for where to store the TSD plot
+time_series_path_iperf_download_group1: submariner.single_gw.vxlan.iperf.download.group1 # Iperf3 only for unidirectional measurement
+time_series_path_iperf_download_group2: submariner.single_gw.vxlan.iperf.download.group2 # Iperf3 only for unidirectional measurement
+time_series_iperf_path_group1: submariner.single_gw.vxlan.iperf.upload.group1 # the time series metric for where to store the TSD plot
+time_series_iperf_path_group2: submariner.single_gw.vxlan.iperf.upload.group2 # the time series metric for where to store the TSD plot
+
 # Netperf Time Series
 time_series_netperf_path_group1: submariner.single_gw.vxlan.netperf.group1 # the time series metric for where to store the TSD plot
 time_series_netperf_path_group2: submariner.single_gw.vxlan.netperf.group2 # the time series metric for where to store the TSD plot

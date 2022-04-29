@@ -23,7 +23,7 @@
     # Broker and Gateway Node Setup
     - name: Launching Submariner Broker Node
       amazon.aws.ec2_instance:
-         name: "cluster1-ha1-node"
+         name: "cluster1-ha1-{{ network_benchmark_tool }}-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -39,7 +39,7 @@
                volume_size: 30
                delete_on_termination: true
          tags:
-           NodeType: "submariner-broker-gateway-node"
+           NodeType: "submariner-broker-gateway-{{ network_benchmark_tool }}-node"
          aws_access_key: "{{ access_key }}"
          aws_secret_key: "{{ secret_key }}"
          state: running
@@ -50,12 +50,12 @@
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "cluster1brokerNode"
-         line: "[cluster1brokerNode]\n{{ brokerIp['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-ha1-node\n"
+         line: "[cluster1brokerNode]\n{{ brokerIp['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-ha1-{{ network_benchmark_tool }}-node\n"
 
     # Experimental Cluster-1 Secondary Gateway Node Setup
     - name: Launching Secondary Submariner Gateway Node
       amazon.aws.ec2_instance:
-         name: "cluster1-ha2-node"
+         name: "cluster1-ha2-{{ network_benchmark_tool }}-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -70,7 +70,7 @@
            assign_public_ip: true
          subnet_id: "{{ aws_subnet }}"
          tags:
-           NodeType: "submariner-secondary-gateway-node"
+           NodeType: "submariner-secondary-gateway-{{ network_benchmark_tool }}-node"
          aws_access_key: "{{ access_key }}"
          aws_secret_key: "{{ secret_key }}"
          state: running
@@ -81,12 +81,12 @@
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "cluster1secondaryGatewayNode"
-         line: "[cluster1secondaryGatewayNode]\n{{ secondaryGatewayNodeIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-ha2-node\n"
+         line: "[cluster1secondaryGatewayNode]\n{{ secondaryGatewayNodeIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster1-ha2-{{ network_benchmark_tool }}-node\n"
 
 #    # Perf Collector Node Setup
     - name: Launching Cluster-2 K8s Master Performance Collector Node
       amazon.aws.ec2_instance:
-         name: "cluster2-ha1-perf-target-node"
+         name: "cluster2-ha1-perf-target-{{ network_benchmark_tool }}-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -107,12 +107,12 @@
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "cluster2Master"
-         line: "[cluster2Master]\n{{ cluster2MasterIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} subctl_broker={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster2-ha1-perf-target-node\n"
+         line: "[cluster2Master]\n{{ cluster2MasterIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ brokerIp['instances'][0]['private_ip_address']}} subctl_broker={{ brokerIp['instances'][0]['private_ip_address']}} hostname=cluster2-ha1-perf-target-{{ network_benchmark_tool }}-node\n"
 
     # Experimental Cluster-2 Secondary Gateway Node Setup
     - name: Launching Cluster-2 K8s Worker Secondary Submariner Gateway Node
       amazon.aws.ec2_instance:
-         name: "cluster2-ha2-node"
+         name: "cluster2-ha2-{{ network_benchmark_tool }}-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -138,12 +138,12 @@
       lineinfile:
          path: "{{ inventory_location }}"
          regexp: "cluster2SecondaryGatewayNode"
-         line: "[cluster2SecondaryGatewayNode]\n{{ cluster2SecondaryGatewayNodeIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ cluster2MasterIP['instances'][0]['private_ip_address']}} hostname=cluster2-ha2-node\n"
+         line: "[cluster2SecondaryGatewayNode]\n{{ cluster2SecondaryGatewayNodeIP['instances'][0]['public_ip_address']}} ansible_user={{ ansible_user }} ansible_connection=ssh k8s_master={{ cluster2MasterIP['instances'][0]['private_ip_address']}} hostname=cluster2-ha2-{{ network_benchmark_tool }}-node\n"
 
     # Cluster-1 Worker Node(s) Setup
     - name: Launching Cluster-1 Worker Nodes
       amazon.aws.ec2_instance:
-         name: "cluster1-worker{{ item+1 }}-node"
+         name: "cluster1-worker{{ item+1 }}-{{ network_benchmark_tool }}-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -171,7 +171,7 @@
     # Cluster-2 Worker-1 Node Setup
     - name: Launching Cluster-2 Worker-1 Node
       amazon.aws.ec2_instance:
-         name: "cluster2-worker1-node"
+         name: "cluster2-worker1-{{ network_benchmark_tool }}-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"
@@ -199,7 +199,7 @@
     # Cluster-2 Worker-2 Node Setup
     - name: Launching Cluster-2 Worker-2 Node
       amazon.aws.ec2_instance:
-         name: "cluster2-worker2-node"
+         name: "cluster2-worker2-{{ network_benchmark_tool }}-node"
          aws_region: "{{ aws_region }}"
          key_name: "{{ aws_key_name }}"
          instance_type: "{{ aws_instance_type }}"

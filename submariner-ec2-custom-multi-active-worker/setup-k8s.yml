@@ -5,24 +5,11 @@
   roles:
     - role: k8s-broker-cluster1
 
-
 - hosts: cluster2Master
   vars_files:
     - vars.yml
   roles:
     - role: k8s-cluster2-perf-collector-master
-
-- hosts: cluster1brokerNode
-  vars_files:
-    - vars.yml
-  roles:
-    - role: submariner-cluster1-broker
-
-- hosts: cluster2Master
-  vars_files:
-    - vars.yml
-  roles:
-    - role: submariner-cluster2
 
 - hosts: cluster1secondaryGatewayNode
   vars_files:
@@ -36,6 +23,18 @@
   roles:
     - role: k8s-cluster2-secondary-gateway
 
+- hosts: cluster1brokerNode
+  vars_files:
+    - vars.yml
+  roles:
+    - role: submariner-cluster1-broker
+
+- hosts: cluster2Master
+  vars_files:
+    - vars.yml
+  roles:
+    - role: submariner-cluster2
+
 - hosts: cluster1WorkerNodes
   vars_files:
     - vars.yml
@@ -46,7 +45,13 @@
   vars_files:
     - vars.yml
   roles:
-    - role: k8s-cluster2-worker
+    - role: k8s-cluster2-worker1
+
+- hosts: cluster2Worker2Node
+  vars_files:
+    - vars.yml
+  roles:
+    - role: k8s-cluster2-worker2
 
 # Skip role if an external TSDB collector is defined in vars.yml
 - hosts: cluster2Worker1Node
@@ -55,30 +60,6 @@
   roles:
     - role: deploy-grafana
       when: external_grafana_collector | default('', true) | trim == ''
-
-- hosts: cluster2Worker1Node
-  vars_files:
-    - vars.yml
-  roles:
-    - role: deploy-netserver-group1
-
-- hosts: cluster2Worker1Node
-  vars_files:
-    - vars.yml
-  roles:
-    - role: deploy-netserver-group2
-
-- hosts: cluster1brokerNode
-  vars_files:
-    - vars.yml
-  roles:
-    - role: deploy-netperf-group1
-
-- hosts: cluster1brokerNode
-  vars_files:
-    - vars.yml
-  roles:
-    - role: deploy-netperf-group2
 
 - hosts: cluster1WorkerNodes
   vars_files:
@@ -106,30 +87,43 @@
     - role: deploy-grafana
       when: external_grafana_collector | default('', true) | trim == ''
 
+# Netperf Deployments
 - hosts: cluster2Worker1Node
   vars_files:
     - vars.yml
   roles:
     - role: deploy-netserver-group1
+      when: network_benchmark_tool == "netperf"
 
 - hosts: cluster2Worker2Node
   vars_files:
     - vars.yml
   roles:
     - role: deploy-netserver-group2
+      when: network_benchmark_tool == "netperf"
 
 - hosts: cluster1brokerNode
   vars_files:
     - vars.yml
   roles:
     - role: deploy-netperf-group1
+      when: network_benchmark_tool == "netperf"
 
 - hosts: cluster1brokerNode
   vars_files:
     - vars.yml
   roles:
     - role: deploy-netperf-group2
+      when: network_benchmark_tool == "netperf"
 
+- hosts: cluster2Worker1Node
+  vars_files:
+    - vars.yml
+  roles:
+    - role: deploy-netserver-group1
+      when: network_benchmark_tool == "netperf"
+
+# Iperf Deployments
 - hosts: cluster2Worker1Node
   vars_files:
     - vars.yml

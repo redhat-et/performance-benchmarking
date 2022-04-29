@@ -7,4 +7,3 @@
 [cluster2Worker1Node]
 
 [cluster2Worker2Node]
-
