@@ -1,5 +1,10 @@
 ---
 # tasks file for k8s-cluster1-worker
+- name: Add kubeconfig to bashrc
+  shell: echo "export KUBECONFIG=/home/{{ ansible_user }}/config" >> /home/{{ ansible_user }}/.bashrc
+
+- name: Enable Multipath Hash Policy in the Kernel
+  shell: sudo sysctl net.ipv4.fib_multipath_hash_policy=1
 
 - name: Set the new hostname
   command: sudo hostnamectl set-hostname {{ hostname }}

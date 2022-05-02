@@ -4,7 +4,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -22,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 6,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -31,11 +34,16 @@
         "bandwidth.netperf.cluster1-worker4-node": "semi-dark-green",
         "sumSeries(bandwidth.active_gw.netperf.*)": "blue",
         "sumSeries(bandwidth.netperf.*)": "light-red",
+        "sumSeries(submariner.active_gw.vxlan.netperf.*.*)": "blue",
         "sumSeries(submariner.multi_gw.vxlan.netperf.*.*)": "blue"
       },
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -73,7 +81,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "pointradius": 4,
       "points": true,
       "renderer": "flot",
@@ -89,12 +97,12 @@
           },
           "refCount": 0,
           "refId": "A",
-          "target": "sumSeries(submariner.multi_gw.vxlan.netperf.*.*)"
+          "target": "sumSeries(submariner.active_gw.vxlan.netperf.*.*)"
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "All Node Aggregate Active-Active Bandwidth",
+      "title": "All Node Aggregate Netperf Active-Active Bandwidth",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -121,6 +129,10 @@
       }
     },
     {
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -173,7 +185,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "targets": [
         {
           "datasource": {
@@ -181,16 +193,18 @@
             "uid": "P66A2574FF36FD84D"
           },
           "refId": "A",
-          "target": "sumSeries(submariner.multi_gw.vxlan.netperf.*.*)"
+          "target": "sumSeries(submariner.active_gw.vxlan.netperf.*.*)"
         }
       ],
-      "title": "Current Aggregated Bandwidth",
+      "title": "Current Aggregated Netperf Bandwidth",
       "type": "stat"
     },
     {
       "aliasColors": {
         "bandwidth.active_gw.netperf.cluster1-worker1-node": "purple",
         "bandwidth.netperf.cluster1-worker1-node": "blue",
+        "submariner.active_gw.vxlan.netperf.group1.cluster1-worker1-client-iperf-axonbrent": "light-yellow",
+        "submariner.active_gw.vxlan.netperf.group1.cluster1-worker2-client-iperf-axonbrent": "purple",
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker1-node": "yellow",
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker2-node": "blue",
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker3-node": "purple"
@@ -198,6 +212,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -236,7 +254,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "pointradius": 4,
       "points": true,
       "renderer": "flot",
@@ -253,7 +271,7 @@
           "hide": false,
           "refCount": 0,
           "refId": "A",
-          "target": "submariner.multi_gw.vxlan.netperf.group1.*",
+          "target": "submariner.active_gw.vxlan.netperf.group1.*",
           "textEditor": false
         }
       ],
@@ -289,6 +307,8 @@
       "aliasColors": {
         "bandwidth.active_gw.netperf.cluster1-worker1-node": "purple",
         "bandwidth.netperf.cluster1-worker1-node": "blue",
+        "submariner.active_gw.vxlan.netperf.group2.cluster1-worker1-client-iperf-axonbrent": "light-yellow",
+        "submariner.active_gw.vxlan.netperf.group2.cluster1-worker2-client-iperf-axonbrent": "purple",
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker1-node": "yellow",
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker2-node": "blue",
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker3-node": "purple",
@@ -299,6 +319,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -337,7 +361,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "pointradius": 4,
       "points": true,
       "renderer": "flot",
@@ -354,7 +378,7 @@
           "hide": false,
           "refCount": 0,
           "refId": "A",
-          "target": "submariner.multi_gw.vxlan.netperf.group2.*",
+          "target": "submariner.active_gw.vxlan.netperf.group2.*",
           "textEditor": false
         }
       ],
@@ -388,7 +412,7 @@
     }
   ],
   "refresh": "",
-  "schemaVersion": 35,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -432,6 +456,6 @@
   "timezone": "browser",
   "title": "Submariner Multi-Active Gateway Netperf Dashboard",
   "uid": "r4KWO5E7r",
-  "version": 11,
+  "version": 2,
   "weekStart": ""
 }

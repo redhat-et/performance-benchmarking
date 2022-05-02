@@ -53,32 +53,6 @@
   roles:
     - role: k8s-cluster2-worker2
 
-# Skip role if an external TSDB collector is defined in vars.yml
-- hosts: cluster2Worker1Node
-  vars_files:
-    - vars.yml
-  roles:
-    - role: deploy-grafana
-      when: external_grafana_collector | default('', true) | trim == ''
-
-- hosts: cluster1WorkerNodes
-  vars_files:
-    - vars.yml
-  roles:
-    - role: k8s-cluster1-worker
-
-- hosts: cluster2Worker1Node
-  vars_files:
-    - vars.yml
-  roles:
-    - role: k8s-cluster2-worker1
-
-- hosts: cluster2Worker2Node
-  vars_files:
-    - vars.yml
-  roles:
-    - role: k8s-cluster2-worker2
-
 ## Skip role if an external TSDB collector is defined in vars.yml
 - hosts: cluster2Worker1Node
   vars_files:

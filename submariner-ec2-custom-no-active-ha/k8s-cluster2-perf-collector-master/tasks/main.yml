@@ -1,5 +1,8 @@
 ---
 # tasks file for k8s-perf-collector
+- name: Add kubeconfig to bashrc
+  shell: echo "export KUBECONFIG=/home/{{ ansible_user }}/config" >> /home/{{ ansible_user }}/.bashrc
+
 - name: Register the private address of the EC2 host
   shell: hostname -I | awk "{print \$1}"
   register: node_ip

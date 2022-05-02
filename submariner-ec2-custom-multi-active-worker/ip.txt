@@ -1,14 +1,12 @@
 [cluster1brokerNode]
+54.82.238.8 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.24 hostname=cluster1-gw1-ha1-netperf-axonbrent
 
 [cluster1secondaryGatewayNode]
+44.202.9.136 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.24 hostname=cluster1-gw2-ha2-netperf-axonbrent
 
 [cluster2Master]
+54.226.88.74 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.24 subctl_broker=10.10.0.24 hostname=cluster2-gw1-ha1-netperf-axonbrent
 
 [cluster2SecondaryGatewayNode]
-
-[cluster1WorkerNodes]
-
-[cluster2Worker1Node]
-
-[cluster2Worker2Node]
+3.86.228.33 ansible_user=fedora ansible_connection=ssh k8s_master=10.10.0.200 hostname=cluster2-gw2-ha2-netperf-axonbrent
 

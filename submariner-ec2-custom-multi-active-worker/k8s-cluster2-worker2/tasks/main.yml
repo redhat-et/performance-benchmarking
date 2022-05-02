@@ -1,5 +1,10 @@
 ---
 # tasks file for k8s-cluster2-worker1
+- name: Add kubeconfig to bashrc
+  shell: echo "export KUBECONFIG=/home/{{ ansible_user }}/config" >> /home/{{ ansible_user }}/.bashrc
+
+- name: Enable Multipath Hash Policy in the Kernel
+  shell: sudo sysctl net.ipv4.fib_multipath_hash_policy=1
 
 - name: Set the new hostname
   command: sudo hostnamectl set-hostname {{ hostname }}
@@ -35,10 +40,4 @@
     K8S_TOKEN: "{{ hostvars[groups['cluster2Master'][0]]['k8s_token'] }}"
     K8S_MASTER: "{{ k8s_master }}"
   shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ K8S_MASTER }}:6443 K3S_TOKEN={{ K8S_TOKEN }} sh -
-#  async: 300
-#  poll: 0
   ignore_errors: True
-
-#- name: Pause for 60s for the worker node to continue initiating
-#  pause:
-#    seconds: 60

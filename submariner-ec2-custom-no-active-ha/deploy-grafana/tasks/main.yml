@@ -19,16 +19,11 @@
         -p 80:80 \
         -p 2003-2004:2003-2004 \
         quay.io/networkstatic/graphite-grafana
+  ignore_errors: True
 
 - name: Pause for 10s for the Graphite/Grafana stack to initialize
   pause:
     seconds: 10
-
-- name: Install YQ
-  shell: |
-    sudo dnf -y install wget
-    sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-    sudo chmod a+x /usr/local/bin/yq
 
 - name: Patch the traefik svc port to fix the overlap with the grafana bind address
   shell: |

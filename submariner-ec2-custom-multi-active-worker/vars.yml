@@ -1,11 +1,12 @@
 # EC2 options
+group_description: -axon               # not ECS specific, simply additional metadata to tag on the end of the hostname for launching multiple instances in the same VPC and avoid overlap
 aws_region: us-east-1                  # AWS region
 vpc_id: vpc-0566e09aa71f553c1          # VPC id from your aws account
 aws_subnet: subnet-0f8a1403fde2af94e   # VPC subnet id from your aws account
 aws_image_id: ami-08b4ee602f76bff79    # Fedora 35 (this can be changed to most any Linux distro)
 aws_key_name: axon-perf-testing        # the key pair on your aws account to use
 aws_instance_type: t2.large            # t2.micro is free tier eligable, but you can use any type to scale up, more examples [t2.large, t2.xlarge, t2.2xlarge]
-node_count: 2                          # the number of cluster nodes you want to deploy
+node_count: 2                          # (!! Iperf needs to be 2 only !! netperf as many as you want) the number of cluster nodes you want to deploy
 secgroup_name: PerfTesting             # the security group name can be an existing group or else it will be created by the playbook
 security_group_description: "Perf Testing for VPC perf-testing-vpc / vpc-0566e09aa71f553c1"
 
@@ -14,8 +15,10 @@ ansible_user: fedora                   # this is the default user ID for your AM
 inventory_location: ip.txt             # leaving this as is will use the ip.txt file in the base directory
 
 # Network Metrics
-network_benchmark_tool: iperf          # [netperf, iperf]
-external_grafana_collector: 10.10.0.76 # external graphite tsdb/grafana instance rather than the playbooks provisioning one for persistant records
+network_benchmark_tool: netperf          # [netperf, iperf]
+#external_grafana_collector: 10.10.0.126 # external graphite tsdb/grafana instance rather than the playbooks provisioning one for persistant records
+external_grafana_collector: # external graphite tsdb/grafana instance rather than the playbooks provisioning one for persistant records
+iperf_connection_count: 1               # (TODO: currently supports only 1) number of simultaneous Iperf connections to make to the server
 
 # Iperf Time Series
 time_series_path_iperf_download_group1: submariner.active_gw.vxlan.iperf.download.group1 # Iperf3 only for unidirectional measurement

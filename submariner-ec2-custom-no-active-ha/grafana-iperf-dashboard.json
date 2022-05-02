@@ -4,7 +4,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -22,21 +25,27 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 4,
+  "id": 5,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "aliasColors": {
-        "bandwidth.netperf.cluster1-worker4-node": "semi-dark-green",
-        "sumSeries(bandwidth.active_gw.netperf.*)": "blue",
-        "sumSeries(bandwidth.netperf.*)": "light-red",
-        "sumSeries(submariner.multi_gw.vxlan.netperf.*.*)": "blue",
-        "sumSeries(submariner.single_gw.vxlan.netperf.*.*)": "blue"
+        "bandwidth.iperf.cluster1-worker4-node": "semi-dark-green",
+        "sumSeries(bandwidth.active_gw.iperf.*)": "blue",
+        "sumSeries(bandwidth.iperf.*)": "light-red",
+        "sumSeries(submariner.multi_gw.vxlan.iperf.*.*)": "blue",
+        "sumSeries(submariner.single_gw.vxlan.iperf.*.*)": "blue",
+        "sumSeries(submariner.single_gw.vxlan.iperf.*.*.*)": "blue",
+        "sumSeries(submariner.single_gw.vxlan.iperf.download.*.*)": "blue"
       },
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -74,7 +83,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "pointradius": 4,
       "points": true,
       "renderer": "flot",
@@ -90,12 +99,12 @@
           },
           "refCount": 0,
           "refId": "A",
-          "target": "sumSeries(submariner.single_gw.vxlan.netperf.*.*)"
+          "target": "sumSeries(submariner.single_gw.vxlan.iperf.download.*.*)"
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "All Node Aggregate Single-Active GW Bandwidth",
+      "title": "All Node Aggregate Single-Active GW Iperf Download Bandwidth",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -122,6 +131,112 @@
       }
     },
     {
+      "aliasColors": {
+        "bandwidth.iperf.cluster1-worker4-node": "semi-dark-green",
+        "sumSeries(bandwidth.active_gw.iperf.*)": "blue",
+        "sumSeries(bandwidth.iperf.*)": "light-red",
+        "sumSeries(submariner.multi_gw.vxlan.iperf.*.*)": "blue",
+        "sumSeries(submariner.single_gw.vxlan.iperf.*.*)": "blue",
+        "sumSeries(submariner.single_gw.vxlan.iperf.*.*.*)": "blue",
+        "sumSeries(submariner.single_gw.vxlan.iperf.download.*.*)": "blue",
+        "sumSeries(submariner.single_gw.vxlan.iperf.upload.*.*)": "purple"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 2,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
+      "hiddenSeries": false,
+      "id": 25,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 3,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "8.5.1",
+      "pointradius": 4,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "P66A2574FF36FD84D"
+          },
+          "refCount": 0,
+          "refId": "A",
+          "target": "sumSeries(submariner.single_gw.vxlan.iperf.upload.*.*)"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "All Node Aggregate Single-Active GW Iperf Upload Bandwidth",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "bps",
+          "show": true
+        },
+        {
+          "format": "short",
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -155,7 +270,7 @@
         "h": 3,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 20
       },
       "id": 10,
       "links": [],
@@ -174,7 +289,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "targets": [
         {
           "datasource": {
@@ -182,26 +297,104 @@
             "uid": "P66A2574FF36FD84D"
           },
           "refId": "A",
-          "target": "sumSeries(submariner.single_gw.vxlan.netperf.*.*)"
+          "target": "sumSeries(submariner.single_gw.vxlan.iperf.download.*.*)"
         }
       ],
-      "title": "Current Aggregated Bandwidth",
+      "title": "Current Aggregated Download Bandwidth",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 26,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "P66A2574FF36FD84D"
+          },
+          "refId": "A",
+          "target": "sumSeries(submariner.single_gw.vxlan.iperf.upload.*.*)"
+        }
+      ],
+      "title": "Current Aggregated Download Upload Bandwidth",
       "type": "stat"
     },
     {
       "aliasColors": {
-        "bandwidth.active_gw.netperf.cluster1-worker1-node": "purple",
-        "bandwidth.netperf.cluster1-worker1-node": "blue",
-        "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker1-node": "yellow",
-        "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker2-node": "blue",
-        "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker3-node": "purple",
-        "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker1-node": "yellow",
-        "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker2-node": "blue",
-        "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker3-node": "purple"
+        "bandwidth.active_gw.iperf.cluster1-worker1-node": "purple",
+        "bandwidth.iperf.cluster1-worker1-node": "blue",
+        "submariner.multi_gw.vxlan.iperf.group1.cluster1-worker1-node": "yellow",
+        "submariner.multi_gw.vxlan.iperf.group1.cluster1-worker2-node": "blue",
+        "submariner.multi_gw.vxlan.iperf.group1.cluster1-worker3-node": "purple",
+        "submariner.single_gw.vxlan.iperf.download.group1.cluster1-iperf-noha-worker1-node": "purple",
+        "submariner.single_gw.vxlan.iperf.download.group1.cluster1-iperf-worker1-client-noha-axonbrent": "orange",
+        "submariner.single_gw.vxlan.iperf.group1.cluster1-noha-worker1-node": "yellow",
+        "submariner.single_gw.vxlan.iperf.group1.cluster1-noha-worker2-node": "blue",
+        "submariner.single_gw.vxlan.iperf.group1.cluster1-noha-worker3-node": "purple",
+        "submariner.single_gw.vxlan.iperf.upload.group1.cluster1-iperf-worker1-client-noha-axonbrent": "light-yellow"
       },
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -217,7 +410,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 26
       },
       "hiddenSeries": false,
       "id": 9,
@@ -239,7 +432,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "pointradius": 4,
       "points": true,
       "renderer": "flot",
@@ -256,13 +449,13 @@
           "hide": false,
           "refCount": 0,
           "refId": "A",
-          "target": "submariner.single_gw.vxlan.netperf.group1.*",
+          "target": "submariner.single_gw.vxlan.iperf.*.group1.*",
           "textEditor": false
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "Cluster-1 Netperf Group-1",
+      "title": "Cluster-1 Iperf Group-1",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -290,21 +483,28 @@
     },
     {
       "aliasColors": {
-        "bandwidth.active_gw.netperf.cluster1-worker1-node": "purple",
-        "bandwidth.netperf.cluster1-worker1-node": "blue",
-        "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker1-node": "yellow",
-        "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker2-node": "blue",
-        "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker3-node": "purple",
-        "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker1-node": "yellow",
-        "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker2-node": "blue",
-        "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker3-node": "purple",
-        "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker1-node": "yellow",
-        "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker2-node": "blue",
-        "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker3-node": "purple"
+        "bandwidth.active_gw.iperf.cluster1-worker1-node": "purple",
+        "bandwidth.iperf.cluster1-worker1-node": "blue",
+        "submariner.multi_gw.vxlan.iperf.group1.cluster1-worker1-node": "yellow",
+        "submariner.multi_gw.vxlan.iperf.group1.cluster1-worker2-node": "blue",
+        "submariner.multi_gw.vxlan.iperf.group1.cluster1-worker3-node": "purple",
+        "submariner.multi_gw.vxlan.iperf.group2.cluster1-worker1-node": "yellow",
+        "submariner.multi_gw.vxlan.iperf.group2.cluster1-worker2-node": "blue",
+        "submariner.multi_gw.vxlan.iperf.group2.cluster1-worker3-node": "purple",
+        "submariner.single_gw.vxlan.iperf.download.group2.cluster1-iperf-noha-worker2-node": "purple",
+        "submariner.single_gw.vxlan.iperf.download.group2.cluster1-iperf-worker2-client-noha-axonbrent": "orange",
+        "submariner.single_gw.vxlan.iperf.group2.cluster1-noha-worker1-node": "yellow",
+        "submariner.single_gw.vxlan.iperf.group2.cluster1-noha-worker2-node": "blue",
+        "submariner.single_gw.vxlan.iperf.group2.cluster1-noha-worker3-node": "purple",
+        "submariner.single_gw.vxlan.iperf.upload.group2.cluster1-iperf-worker2-client-noha-axonbrent": "light-yellow"
       },
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -320,7 +520,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 37
       },
       "hiddenSeries": false,
       "id": 24,
@@ -342,7 +542,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "pointradius": 4,
       "points": true,
       "renderer": "flot",
@@ -359,13 +559,13 @@
           "hide": false,
           "refCount": 0,
           "refId": "A",
-          "target": "submariner.single_gw.vxlan.netperf.group2.*",
+          "target": "submariner.single_gw.vxlan.iperf.*.group2.*",
           "textEditor": false
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "Cluster-1 Netperf Group-2",
+      "title": "Cluster-1 Iperf Group-2",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -392,15 +592,15 @@
       }
     }
   ],
-  "refresh": "",
-  "schemaVersion": 35,
+  "refresh": "30s",
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -437,6 +637,6 @@
   "timezone": "browser",
   "title": "Submariner Single-Active Gateway Iperf Dashboard",
   "uid": "r4KWOkR7e",
-  "version": 5,
+  "version": 4,
   "weekStart": ""
 }

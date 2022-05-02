@@ -4,7 +4,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -22,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 4,
+  "id": 7,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -37,6 +40,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -74,7 +81,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "pointradius": 4,
       "points": true,
       "renderer": "flot",
@@ -95,7 +102,7 @@
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "All Node Aggregate Single-Active GW Bandwidth",
+      "title": "All Node Aggregate Single-Active GW Netperf Bandwidth",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -122,6 +129,10 @@
       }
     },
     {
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -174,7 +185,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "targets": [
         {
           "datasource": {
@@ -185,7 +196,7 @@
           "target": "sumSeries(submariner.single_gw.vxlan.netperf.*.*)"
         }
       ],
-      "title": "Current Aggregated Bandwidth",
+      "title": "Current Aggregated Netperf Bandwidth",
       "type": "stat"
     },
     {
@@ -195,6 +206,8 @@
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker1-node": "yellow",
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker2-node": "blue",
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker3-node": "purple",
+        "submariner.single_gw.vxlan.netperf.group1.cluster1-iperf-worker1-client-noha-axonbrent": "light-yellow",
+        "submariner.single_gw.vxlan.netperf.group1.cluster1-iperf-worker2-client-noha-axonbrent": "purple",
         "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker1-node": "yellow",
         "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker2-node": "blue",
         "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker3-node": "purple"
@@ -202,6 +215,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -239,7 +256,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "pointradius": 4,
       "points": true,
       "renderer": "flot",
@@ -298,6 +315,8 @@
         "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker1-node": "yellow",
         "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker2-node": "blue",
         "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker3-node": "purple",
+        "submariner.single_gw.vxlan.netperf.group2.cluster1-iperf-worker1-client-noha-axonbrent": "light-yellow",
+        "submariner.single_gw.vxlan.netperf.group2.cluster1-iperf-worker2-client-noha-axonbrent": "purple",
         "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker1-node": "yellow",
         "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker2-node": "blue",
         "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker3-node": "purple"
@@ -305,6 +324,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "P66A2574FF36FD84D"
+      },
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -342,7 +365,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.5.1",
       "pointradius": 4,
       "points": true,
       "renderer": "flot",
@@ -393,7 +416,7 @@
     }
   ],
   "refresh": "",
-  "schemaVersion": 35,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -437,6 +460,6 @@
   "timezone": "browser",
   "title": "Submariner Single-Active Gateway Netperf Dashboard",
   "uid": "r4KWOeR7e",
-  "version": 5,
+  "version": 2,
   "weekStart": ""
 }
