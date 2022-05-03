@@ -240,6 +240,8 @@
         "alignAsTable": true,
         "avg": true,
         "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": true,
         "min": true,
         "show": true,
@@ -347,6 +349,8 @@
         "alignAsTable": true,
         "avg": true,
         "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": true,
         "min": true,
         "show": true,
@@ -456,6 +460,6 @@
   "timezone": "browser",
   "title": "Submariner Multi-Active Gateway Netperf Dashboard",
   "uid": "r4KWO5E7r",
-  "version": 2,
+  "version": 4,
   "weekStart": ""
 }

@@ -25,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 4,
+  "id": 8,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -376,6 +376,7 @@
       "aliasColors": {
         "bandwidth.active_gw.iperf.cluster1-worker1-node": "purple",
         "bandwidth.iperf.cluster1-worker1-node": "blue",
+        "submariner.active_gw.vxlan.iperf.download.group1.cluster1-worker1-client-iperf-axon": "purple",
         "submariner.active_gw.vxlan.iperf.download.group1.cluster1-worker1-client-iperf-axonbrent": "orange",
         "submariner.active_gw.vxlan.iperf.download.group1.cluster1-worker1-iperf-node": "purple",
         "submariner.active_gw.vxlan.iperf.upload.group1.cluster1-worker1-client-iperf-axonbrent": "light-yellow",
@@ -414,6 +415,8 @@
         "alignAsTable": true,
         "avg": true,
         "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": true,
         "min": true,
         "show": true,
@@ -481,6 +484,7 @@
       "aliasColors": {
         "bandwidth.active_gw.iperf.cluster1-worker1-node": "purple",
         "bandwidth.iperf.cluster1-worker1-node": "blue",
+        "submariner.active_gw.vxlan.iperf.download.group2.cluster1-worker2-client-iperf-axon": "purple",
         "submariner.active_gw.vxlan.iperf.download.group2.cluster1-worker2-client-iperf-axonbrent": "orange",
         "submariner.active_gw.vxlan.iperf.download.group2.cluster1-worker2-iperf-node": "purple",
         "submariner.active_gw.vxlan.iperf.upload.group2.cluster1-worker2-client-iperf-axonbrent": "light-yellow",
@@ -522,6 +526,8 @@
         "alignAsTable": true,
         "avg": true,
         "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": true,
         "min": true,
         "show": true,
@@ -631,6 +637,6 @@
   "timezone": "browser",
   "title": "Submariner Multi-Active Gateway Iperf Dashboard",
   "uid": "r4KWOkE74",
-  "version": 4,
+  "version": 2,
   "weekStart": ""
 }

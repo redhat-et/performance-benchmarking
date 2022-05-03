@@ -25,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 5,
+  "id": 9,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -418,6 +418,8 @@
         "alignAsTable": true,
         "avg": true,
         "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": true,
         "min": true,
         "show": true,
@@ -528,6 +530,8 @@
         "alignAsTable": true,
         "avg": true,
         "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": true,
         "min": true,
         "show": true,
@@ -637,6 +641,6 @@
   "timezone": "browser",
   "title": "Submariner Single-Active Gateway Iperf Dashboard",
   "uid": "r4KWOkR7e",
-  "version": 4,
+  "version": 2,
   "weekStart": ""
 }

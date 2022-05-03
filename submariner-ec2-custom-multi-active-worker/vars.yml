@@ -15,10 +15,10 @@ ansible_user: fedora                   # this is the default user ID for your AM
 inventory_location: ip.txt             # leaving this as is will use the ip.txt file in the base directory
 
 # Network Metrics
-network_benchmark_tool: netperf          # [netperf, iperf]
+network_benchmark_tool: netperf        # [netperf, iperf]
 #external_grafana_collector: 10.10.0.126 # external graphite tsdb/grafana instance rather than the playbooks provisioning one for persistant records
-external_grafana_collector: # external graphite tsdb/grafana instance rather than the playbooks provisioning one for persistant records
-iperf_connection_count: 1               # (TODO: currently supports only 1) number of simultaneous Iperf connections to make to the server
+external_grafana_collector:            # external graphite tsdb/grafana instance rather than the playbooks provisioning one for persistant records
+iperf_connection_count: 1              # (TODO: currently supports only 1) number of simultaneous Iperf connections to make to the server
 
 # Iperf Time Series
 time_series_path_iperf_download_group1: submariner.active_gw.vxlan.iperf.download.group1 # Iperf3 only for unidirectional measurement
@@ -39,5 +39,6 @@ submariner_service_cidr_cluster2: 10.85.0.0/16
 
 # Submariner Active/Active Options
 submariner_subctl_binary_url: https://perf-testing-submariner-s3.s3.amazonaws.com/subctl # url of the custom subctl binary
-submariner_broker_repository: quay.io/networkstatic # custom image repo broker deploys
-submariner_image_override: quay.io/networkstatic    # custom image repo for submariner deploys
+submariner_broker_repository: quay.io/submariner # custom image repo broker deploys
+submariner_image_override: quay.io/submariner    # custom image repo for submariner deploys
+submariner_version: feature-multi-active-gw

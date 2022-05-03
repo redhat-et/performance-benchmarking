@@ -37,5 +37,4 @@
     K8S_TOKEN: "{{ hostvars[groups['cluster2Master'][0]]['k8s_token'] }}"
     K8S_MASTER: "{{ k8s_master }}"
   shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ K8S_MASTER }}:6443 K3S_TOKEN={{ K8S_TOKEN }} sh -
-
   ignore_errors: True

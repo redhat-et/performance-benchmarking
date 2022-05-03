@@ -1,15 +1,7 @@
 ---
 # tasks file for deploy-iperf-svr-group1
-
 - name: Ensure the submariner-gateway pod is in ready state
   shell: kubectl wait --for=condition=ready pod -l app=submariner-gateway --timeout=120s -n submariner-operator --kubeconfig /home/{{ ansible_user }}/config
-
-- name: Install Submariner
-  shell: |
-    curl -Ls https://get.submariner.io/ > /home/{{ ansible_user }}/install-sub
-    chmod +x /home/{{ ansible_user }}/install-sub
-    /home/{{ ansible_user }}/install-sub
-    sudo cp /root/.local/bin/subctl /usr/local/bin/subctl
 
 - name: Label worker1 node in cluster-2 for the iperf deployment
   shell: kubectl label nodes {{ hostname }} iperf-group1=true --overwrite --kubeconfig /home/{{ ansible_user }}/config
@@ -46,20 +38,9 @@
 - name: Starting the Iperf Group-1 Deployment
   command: kubectl apply -f /home/{{ ansible_user }}/iperf-group1.yaml --kubeconfig /home/{{ ansible_user }}/config
 
-- name: Expose the iperf-server-group1 deployment
-  command: kubectl expose deployment iperf-server-group1 --kubeconfig /home/{{ ansible_user }}/config
-
 - name: Pause for 10s to allow for stabilization
   pause:
     seconds: 10
-
-- name: Export group1 iperf deployment with Submariner
-  become_user: "{{ ansible_user }}"
-  shell: subctl --kubeconfig /home/{{ ansible_user }}/config export service -n default iperf-server-group1
-
-- name: Pause for 5s for convergence
-  pause:
-    seconds: 5
 
 - name: Register the exported iperf address
   shell: kubectl get pods -l app=iperf-server-group1 -o custom-columns=IP:status.podIP  --no-headers --kubeconfig /home/{{ ansible_user }}/config

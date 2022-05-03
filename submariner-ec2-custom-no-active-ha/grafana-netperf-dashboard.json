@@ -208,6 +208,8 @@
         "submariner.multi_gw.vxlan.netperf.group1.cluster1-worker3-node": "purple",
         "submariner.single_gw.vxlan.netperf.group1.cluster1-iperf-worker1-client-noha-axonbrent": "light-yellow",
         "submariner.single_gw.vxlan.netperf.group1.cluster1-iperf-worker2-client-noha-axonbrent": "purple",
+        "submariner.single_gw.vxlan.netperf.group1.cluster1-netperf-worker1-client-noha-axonperf": "purple",
+        "submariner.single_gw.vxlan.netperf.group1.cluster1-netperf-worker2-client-noha-axonperf": "yellow",
         "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker1-node": "yellow",
         "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker2-node": "blue",
         "submariner.single_gw.vxlan.netperf.group1.cluster1-noha-worker3-node": "purple"
@@ -242,6 +244,8 @@
         "alignAsTable": true,
         "avg": true,
         "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": true,
         "min": true,
         "show": true,
@@ -315,8 +319,10 @@
         "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker1-node": "yellow",
         "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker2-node": "blue",
         "submariner.multi_gw.vxlan.netperf.group2.cluster1-worker3-node": "purple",
-        "submariner.single_gw.vxlan.netperf.group2.cluster1-iperf-worker1-client-noha-axonbrent": "light-yellow",
+        "submariner.single_gw.vxlan.netperf.group2.cluster1-iperf-worker1-client-noha-axonbrent": "purple",
         "submariner.single_gw.vxlan.netperf.group2.cluster1-iperf-worker2-client-noha-axonbrent": "purple",
+        "submariner.single_gw.vxlan.netperf.group2.cluster1-netperf-worker1-client-noha-axonperf": "purple",
+        "submariner.single_gw.vxlan.netperf.group2.cluster1-netperf-worker2-client-noha-axonperf": "yellow",
         "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker1-node": "yellow",
         "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker2-node": "blue",
         "submariner.single_gw.vxlan.netperf.group2.cluster1-noha-worker3-node": "purple"
@@ -351,6 +357,8 @@
         "alignAsTable": true,
         "avg": true,
         "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": true,
         "min": true,
         "show": true,
@@ -460,6 +468,6 @@
   "timezone": "browser",
   "title": "Submariner Single-Active Gateway Netperf Dashboard",
   "uid": "r4KWOeR7e",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
